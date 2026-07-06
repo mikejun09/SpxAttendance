@@ -31,7 +31,7 @@
 @section('content')
 <div class="page-header">
     <div>
-        <h1>Mark Attendance</h1>
+        <h1>Create Attendance</h1>
         <p>{{ $parsedDate->format('l, F d, Y') }}</p>
     </div>
     <div style="display:flex; gap:10px; align-items:center;">
