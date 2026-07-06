@@ -97,7 +97,7 @@
                         <th width="30%">Rider</th>
                         <th width="30%">Status</th>
                         <th width="25%">SPX Account</th>
-                        <th>Notes</th>
+                        <th>Notes</th> 
                     </tr>
                 </thead>
                 <tbody>
