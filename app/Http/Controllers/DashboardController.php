@@ -13,13 +13,29 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $today = now()->toDateString();
-        $weekStart = now()->startOfWeek(\Carbon\Carbon::MONDAY)->toDateString();
-        $weekEnd = now()->endOfWeek(\Carbon\Carbon::SUNDAY)->toDateString();
-        $monthStart = now()->startOfMonth()->toDateString();
-        $monthEnd = now()->endOfMonth()->toDateString();
+
+        $selectedWeekDate = $request->input('week_date', $today);
+        try {
+            $weekCarbon = \Carbon\Carbon::parse($selectedWeekDate);
+        } catch (\Exception $e) {
+            $weekCarbon = now();
+        }
+        $weekStart = $weekCarbon->copy()->startOfWeek(\Carbon\Carbon::MONDAY)->toDateString();
+        $weekEnd = $weekCarbon->copy()->endOfWeek(\Carbon\Carbon::SUNDAY)->toDateString();
+
+        $selectedMonth = $request->input('month', now()->format('Y-m'));
+        try {
+            $monthCarbon = \Carbon\Carbon::parse($selectedMonth . '-01');
+        } catch (\Exception $e) {
+            $monthCarbon = now();
+        }
+        $monthStart = $monthCarbon->copy()->startOfMonth()->toDateString();
+        $monthEnd = $monthCarbon->copy()->endOfMonth()->toDateString();
+
+        $activePeriod = $request->input('period', 'week');
 
         $stats = [
             'total_riders'       => Rider::where('is_active', true)->count(),
@@ -104,7 +120,14 @@ class DashboardController extends Controller
             'riders', 
             'spxAccounts', 
             'weeklyFinancials', 
-            'monthlyFinancials'
+            'monthlyFinancials',
+            'selectedWeekDate',
+            'selectedMonth',
+            'activePeriod',
+            'weekStart',
+            'weekEnd',
+            'monthStart',
+            'monthEnd'
         ));
     }
 

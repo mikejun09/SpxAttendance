@@ -86,6 +86,10 @@ class PayslipController extends Controller
 
         $data = $this->computePayslip($rider, $weekStart, $weekEnd);
 
+        if ($data['total_days'] == 0) {
+            return back()->withErrors(['week_start' => 'Cannot generate payslip. The rider has no present or half-day attendance records for this week.'])->withInput();
+        }
+
         // Determine CA deduction
         $caDeduction = 0;
         $caIds = $validated['cash_advance_ids'] ?? [];
@@ -256,7 +260,7 @@ class PayslipController extends Controller
                 'net_pay'     => max(0, $data['gross_pay'] - $caTotal),
                 'existing'    => $existing,
             ];
-        });
+        })->filter(fn($row) => $row['total_days'] > 0);
 
         return view('payslips.bulk-cutoff', compact('weekStart', 'weekEnd', 'preview'));
     }
@@ -288,6 +292,8 @@ class PayslipController extends Controller
             if ($existing) { $skipped++; continue; }
 
             $data = $this->computePayslip($rider, $weekStart, $weekEnd);
+
+            if ($data['total_days'] == 0) { $skipped++; continue; }
 
             // Auto-deduct ALL pending cash advances
             $pendingCa = CashAdvance::where('rider_id', $rider->id)

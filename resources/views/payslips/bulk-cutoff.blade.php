@@ -115,7 +115,7 @@
     <div class="card">
         <div class="empty-state">
             <i class="fa-solid fa-users-slash"></i>
-            <p>No active riders found. <a href="{{ route('riders.index') }}" style="color:var(--accent)">Manage Riders</a></p>
+            <p>No active riders with billable attendance found for this week. <a href="{{ route('attendance.index') }}" style="color:var(--accent)">View Attendance</a></p>
         </div>
     </div>
 @else

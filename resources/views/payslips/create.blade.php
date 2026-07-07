@@ -221,10 +221,12 @@
                         Week of {{ $weekStart->format('M d') }} – {{ $weekEnd->format('M d, Y') }}
                     </div>
 
-                    @if ($preview['attendances']->isEmpty())
-                        <div class="alert alert-warning">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                            No attendance records found for this week. The payslip will show 0 days worked.
+                    @if ($preview['total_days'] == 0)
+                        <div class="alert alert-danger">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <div>
+                                <strong>Cannot generate payslip:</strong> This rider is marked as absent or rest day for the entire week (0 billable days).
+                            </div>
                         </div>
                     @else
                         <div class="table-wrap" style="margin-bottom:16px;">
@@ -390,7 +392,7 @@
                 </div>
 
                 <div style="display:flex; gap:10px;">
-                    <button type="submit" class="btn btn-primary" style="padding:12px 28px; font-size:15px;">
+                    <button type="submit" class="btn btn-primary" style="padding:12px 28px; font-size:15px;" {{ $preview['total_days'] == 0 ? 'disabled' : '' }}>
                         <i class="fa-solid fa-file-invoice-dollar"></i> Generate Payslip
                     </button>
                     <a href="{{ route('payslips.index') }}" class="btn btn-secondary">Cancel</a>

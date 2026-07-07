@@ -247,6 +247,44 @@
             font-weight: 600;
             color: var(--text-primary);
         }
+
+        /* Month picker styling to match date picker */
+        .date-picker input[type="month"] {
+            width: auto;
+            padding: 9px 14px 9px 40px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color .2s, box-shadow .2s, background .2s;
+            appearance: none;
+            -webkit-appearance: none;
+            min-width: 160px;
+        }
+        .date-picker input[type="month"]:hover {
+            border-color: var(--accent);
+            background: var(--bg-hover);
+        }
+        .date-picker input[type="month"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, .18);
+            background: var(--bg-hover);
+        }
+        .date-picker input[type="month"]::-webkit-calendar-picker-indicator {
+            position: absolute;
+            right: 0;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
     </style>
 @endpush
 
@@ -259,13 +297,29 @@
                 <i class="fa-solid fa-wallet" style="color:var(--accent)"></i> Financial Performance Overview
             </div>
             <div class="finance-toggle-btns">
-                <button id="btn-period-week" class="finance-toggle-btn active" onclick="toggleFinancePeriod('week')">This Week</button>
-                <button id="btn-period-month" class="finance-toggle-btn" onclick="toggleFinancePeriod('month')">This Month</button>
+                <button id="btn-period-week" class="finance-toggle-btn {{ $activePeriod === 'week' ? 'active' : '' }}" onclick="toggleFinancePeriod('week')">This Week</button>
+                <button id="btn-period-month" class="finance-toggle-btn {{ $activePeriod === 'month' ? 'active' : '' }}" onclick="toggleFinancePeriod('month')">This Month</button>
             </div>
         </div>
 
         {{-- Week Panel --}}
-        <div id="finance-week" class="finance-period-panel">
+        <div id="finance-week" class="finance-period-panel" style="{{ $activePeriod === 'week' ? '' : 'display:none;' }}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; background: var(--bg-hover); padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border);">
+                <div style="font-size: 13px; color: var(--text-secondary);">
+                    Week of <strong style="color:var(--text-primary);">{{ \Carbon\Carbon::parse($weekStart)->format('M d, Y') }}</strong> to <strong style="color:var(--text-primary);">{{ \Carbon\Carbon::parse($weekEnd)->format('M d, Y') }}</strong>
+                </div>
+                <form method="GET" action="{{ route('dashboard') }}" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="hidden" name="period" value="week">
+                    @if(request('month'))
+                        <input type="hidden" name="month" value="{{ request('month') }}">
+                    @endif
+                    <label for="week_date" style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin: 0;">Select Date:</label>
+                    <div class="date-picker">
+                        <i class="fa-solid fa-calendar-week dp-icon"></i>
+                        <input type="date" name="week_date" id="week_date" value="{{ $selectedWeekDate }}" onchange="this.form.submit()">
+                    </div>
+                </form>
+            </div>
             <div class="finance-summary-grid">
                 <div class="finance-summary-card">
                     <span class="finance-summary-label">Total Weekly Income</span>
@@ -312,7 +366,23 @@
         </div>
 
         {{-- Month Panel --}}
-        <div id="finance-month" class="finance-period-panel" style="display:none;">
+        <div id="finance-month" class="finance-period-panel" style="{{ $activePeriod === 'month' ? '' : 'display:none;' }}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; background: var(--bg-hover); padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border);">
+                <div style="font-size: 13px; color: var(--text-secondary);">
+                    Month of <strong style="color:var(--text-primary);">{{ \Carbon\Carbon::parse($monthStart)->format('F Y') }}</strong>
+                </div>
+                <form method="GET" action="{{ route('dashboard') }}" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="hidden" name="period" value="month">
+                    @if(request('week_date'))
+                        <input type="hidden" name="week_date" value="{{ request('week_date') }}">
+                    @endif
+                    <label for="month" style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin: 0;">Select Month:</label>
+                    <div class="date-picker">
+                        <i class="fa-solid fa-calendar-days dp-icon"></i>
+                        <input type="month" name="month" id="month" value="{{ $selectedMonth }}" onchange="this.form.submit()">
+                    </div>
+                </form>
+            </div>
             <div class="finance-summary-grid">
                 <div class="finance-summary-card">
                     <span class="finance-summary-label">Total Monthly Income</span>
