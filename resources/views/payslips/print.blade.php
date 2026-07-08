@@ -517,12 +517,26 @@
                         </div>
                     @endforeach
                 @endif
+                @if ($payslip->prior_balance_deduction > 0)
+                    <div class="pay-row">
+                        <span class="lbl">⚠ Prior Balance Deduction</span>
+                        <span style="font-weight:600; color:#dc2626;">–
+                            ₱{{ number_format($payslip->prior_balance_deduction, 2) }}</span>
+                    </div>
+                @endif
             </div>
 
             <div class="net-pay-box">
                 <div class="label">NET PAY FOR THE WEEK</div>
                 <div class="amount">₱{{ number_format($payslip->net_pay, 2) }}</div>
             </div>
+
+            @if ($payslip->rider->carried_balance > 0)
+                <div style="margin-top:12px; padding:10px 16px; background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; font-size:12px; color:#92400e;">
+                    ⚠ <strong>Outstanding Balance:</strong>
+                    ₱{{ number_format($payslip->rider->carried_balance, 2) }} will be carried over and deducted from the next payslip.
+                </div>
+            @endif
 
             @if ($payslip->notes)
                 <div

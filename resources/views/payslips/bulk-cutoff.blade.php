@@ -147,6 +147,7 @@
                         <th>Daily Rate</th>
                         <th>Gross Pay</th>
                         <th>CA Deduction</th>
+                        <th>Prior Balance</th>
                         <th>Net Pay</th>
                         <th>Status</th>
                     </tr>
@@ -182,6 +183,16 @@
                             @if($row['ca_total'] > 0)
                                 <span style="color:var(--danger); font-weight:600;">– ₱{{ number_format($row['ca_total'], 2) }}</span>
                                 <div style="font-size:11px; color:var(--text-muted);">{{ $row['pending_ca']->count() }} advance(s)</div>
+                            @else
+                                <span style="color:var(--text-muted);">—</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($row['carried_balance'] > 0)
+                                <span style="color:var(--danger); font-weight:600;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    – ₱{{ number_format($row['carried_balance'], 2) }}
+                                </span>
                             @else
                                 <span style="color:var(--text-muted);">—</span>
                             @endif

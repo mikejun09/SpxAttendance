@@ -144,11 +144,31 @@
                         @endforeach
                     @endif
 
+                    @if ($payslip->prior_balance_deduction > 0)
+                        <div
+                            style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); font-size:13px;">
+                            <span style="color:var(--text-muted);">
+                                <i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i>
+                                Prior Balance Deduction
+                            </span>
+                            <span style="font-weight:600; color:var(--danger);">–
+                                ₱{{ number_format($payslip->prior_balance_deduction, 2) }}</span>
+                        </div>
+                    @endif
+
                     <div style="display:flex; justify-content:space-between; padding:16px 0; margin-top:4px;">
                         <span style="font-weight:700; font-size:16px;">NET PAY</span>
                         <span
                             style="font-weight:800; font-size:24px; color:var(--success);">₱{{ number_format($payslip->net_pay, 2) }}</span>
                     </div>
+
+                    @if ($payslip->rider->carried_balance > 0)
+                        <div style="margin-top:8px; padding:10px 14px; background:rgba(239,68,68,.1); border-radius:8px; font-size:13px; border:1px solid rgba(239,68,68,.3);">
+                            <i class="fa-solid fa-circle-exclamation" style="color:var(--danger,#ef4444);"></i>
+                            <strong style="color:var(--danger,#ef4444);">Outstanding Balance:</strong>
+                            ₱{{ number_format($payslip->rider->carried_balance, 2) }} will be deducted from the rider's next payslip.
+                        </div>
+                    @endif
                 </div>
             </div>
 

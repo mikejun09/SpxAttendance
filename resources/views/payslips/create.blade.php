@@ -211,6 +211,7 @@
 
                 {{-- Hidden fields for live preview data --}}
                 <input type="hidden" id="js-gross" value="{{ $preview['gross_pay'] }}">
+                <input type="hidden" id="js-prior-balance" value="{{ $preview['carried_balance'] }}">
 
                 <div class="card" style="margin-bottom:20px;">
                     <div class="card-title" style="margin-bottom:16px;">
@@ -289,6 +290,15 @@
                             <span class="label"><strong>Gross Pay</strong></span>
                             <span class="value preview-total">₱{{ number_format($preview['gross_pay'], 2) }}</span>
                         </div>
+
+                        @if ($preview['carried_balance'] > 0)
+                            <div class="preview-row" style="background:rgba(239,68,68,.08); border-radius:6px; padding:10px 12px; margin-top:8px;">
+                                <span class="label" style="color:var(--danger,#ef4444); font-weight:600;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Prior Balance Carried Forward
+                                </span>
+                                <span class="value" style="color:var(--danger,#ef4444);">–₱{{ number_format($preview['carried_balance'], 2) }}</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -369,7 +379,7 @@
                             </div>
                         </div>
                         <div id="live-net-pay" style="font-size:28px; font-weight:800; color:var(--success);">
-                            ₱{{ number_format($preview['gross_pay'], 2) }}
+                            ₱{{ number_format(max(0, $preview['gross_pay'] - $preview['carried_balance']), 2) }}
                         </div>
                     </div>
                 </div>
@@ -488,7 +498,8 @@
                             manualTotal += parseFloat(row.querySelector('input[type="number"]').value) || 0;
                         });
                     }
-                    const net = Math.max(0, gross - caTotal - manualTotal);
+                    const priorBalance = parseFloat(document.getElementById('js-prior-balance')?.value ?? 0);
+                    const net = Math.max(0, gross - caTotal - manualTotal - priorBalance);
                     liveNet.textContent = '₱' + net.toLocaleString('en-PH', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2

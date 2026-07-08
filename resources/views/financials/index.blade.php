@@ -71,13 +71,15 @@
 @endpush
 
 @section('content')
-    {{-- Tab buttons --}}
     <div class="panel-header-tabs">
         <button class="tab-btn active" id="btn-expenses" onclick="switchTab('expenses')">
             <i class="fa-solid fa-file-invoice-dollar"></i> Expenses
         </button>
         <button class="tab-btn" id="btn-income" onclick="switchTab('income')">
             <i class="fa-solid fa-hand-holding-dollar"></i> Weekly Income
+        </button>
+        <button class="tab-btn" id="btn-balances" onclick="switchTab('balances')">
+            <i class="fa-solid fa-scale-unbalanced"></i> Outstanding Balances
         </button>
     </div>
 
@@ -254,6 +256,124 @@
         </div>
     </div>
 
+    {{-- Tab: Outstanding Balances ────────────────────────────── --}}
+    <div id="tab-balances" class="tab-panel">
+        <div class="card">
+            <div class="card-header" style="margin-bottom:15px; display:flex; flex-direction:column; align-items:stretch; gap:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div class="card-title">
+                        <i class="fa-solid fa-scale-unbalanced" style="color:var(--accent)"></i> Rider Outstanding Balances
+                    </div>
+                </div>
+                
+                {{-- Search & Filter form --}}
+                <form method="GET" action="{{ route('financials.index') }}" class="filter-bar" style="margin-bottom:0;">
+                    <input type="hidden" name="active_tab" value="balances">
+                    <div class="form-group">
+                        <label>Rider Search</label>
+                        <input type="text" name="rider_search" placeholder="Name or employee ID…" value="{{ request('rider_search') }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Filter</label>
+                        <select name="filter_balance">
+                            <option value="has_balance" {{ request('filter_balance', 'has_balance') === 'has_balance' ? 'selected' : '' }}>Only with Outstanding Balance</option>
+                            <option value="all" {{ request('filter_balance') === 'all' ? 'selected' : '' }}>All Riders</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="display:flex; gap:8px; align-items:flex-end;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-magnifying-glass"></i> Search
+                        </button>
+                        <a href="{{ route('financials.index', ['active_tab' => 'balances']) }}" class="btn btn-secondary">Reset</a>
+                    </div>
+                </form>
+            </div>
+
+            @if($outstandingRiders->isEmpty())
+                <div class="empty-state" style="padding:40px 20px;">
+                    <i class="fa-solid fa-user-check"></i>
+                    <p>No riders with outstanding balances found.</p>
+                </div>
+            @else
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rider</th>
+                                <th>Employee ID</th>
+                                <th>Carried Balance (Payslips)</th>
+                                <th>Pending Cash Advances</th>
+                                <th>Total Outstanding</th>
+                                <th style="width: 200px; text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($outstandingRiders as $row)
+                                @php
+                                    $pendingCaSum = $row->pendingCashAdvances->sum('amount');
+                                    $totalOutstanding = $row->carried_balance + $pendingCaSum;
+                                @endphp
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('riders.show', $row) }}" style="color:var(--text-primary); text-decoration:none;">
+                                            <strong>{{ $row->name }}</strong>
+                                        </a>
+                                    </td>
+                                    <td style="color:var(--text-muted); font-size:12px; font-family:monospace;">
+                                        {{ $row->employee_id ?? '—' }}
+                                    </td>
+                                    <td>
+                                        @if($row->carried_balance > 0)
+                                            <span style="color:var(--danger); font-weight:600;">₱{{ number_format($row->carried_balance, 2) }}</span>
+                                        @else
+                                            <span style="color:var(--text-muted);">₱0.00</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($pendingCaSum > 0)
+                                            <span style="color:var(--warning); font-weight:600;">₱{{ number_format($pendingCaSum, 2) }}</span>
+                                            <div style="font-size:11px; color:var(--text-muted);">{{ $row->pendingCashAdvances->count() }} pending</div>
+                                        @else
+                                            <span style="color:var(--text-muted);">₱0.00</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($totalOutstanding > 0)
+                                            <span class="badge badge-danger" style="font-size:13px; padding:6px 12px;">₱{{ number_format($totalOutstanding, 2) }}</span>
+                                        @else
+                                            <span class="badge badge-success" style="font-size:13px; padding:6px 12px;">₱0.00</span>
+                                        @endif
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <div style="display:flex; gap:6px; justify-content:center; align-items:center;">
+                                            <a href="{{ route('riders.show', $row) }}" class="btn btn-secondary btn-sm" title="View Profile">
+                                                <i class="fa-solid fa-eye"></i> Profile
+                                            </a>
+                                            <a href="{{ route('payslips.create', ['rider_id' => $row->id]) }}" class="btn btn-primary btn-sm" title="Create Payslip">
+                                                <i class="fa-solid fa-file-invoice-dollar"></i> Payslip
+                                            </a>
+                                            @if($row->carried_balance > 0)
+                                                <form method="POST" action="{{ route('financials.clear_balance', $row) }}" onsubmit="return confirm('Clear the carried outstanding balance for {{ $row->name }}?')" style="display:inline; margin:0;">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Clear Balance">
+                                                        <i class="fa-solid fa-eraser"></i> Clear Bal
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    {{ $outstandingRiders->links() }}
+                </div>
+            @endif
+        </div>
+    </div>
+
     @push('scripts')
         <script>
             // ── Tab switching ──────────────────────────────────────────────────
@@ -265,10 +385,14 @@
                     document.getElementById('btn-expenses').classList.add('active');
                     document.getElementById('tab-expenses').classList.add('active');
                     localStorage.setItem('active_finance_tab', 'expenses');
-                } else {
+                } else if(name === 'income') {
                     document.getElementById('btn-income').classList.add('active');
                     document.getElementById('tab-income').classList.add('active');
                     localStorage.setItem('active_finance_tab', 'income');
+                } else if(name === 'balances') {
+                    document.getElementById('btn-balances').classList.add('active');
+                    document.getElementById('tab-balances').classList.add('active');
+                    localStorage.setItem('active_finance_tab', 'balances');
                 }
             }
 
@@ -277,12 +401,14 @@
                 const activeTab = localStorage.getItem('active_finance_tab') || 'expenses';
                 switchTab(activeTab);
 
-                // If pagination parameter for income is in the URL, switch to income tab
+                // If pagination/tab parameter is in the URL, switch to that tab
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.has('incomes_page')) {
                     switchTab('income');
                 } else if (urlParams.has('expenses_page')) {
                     switchTab('expenses');
+                } else if (urlParams.has('riders_page') || urlParams.has('rider_search') || urlParams.get('active_tab') === 'balances') {
+                    switchTab('balances');
                 }
             });
         </script>

@@ -23,6 +23,7 @@ class Payslip extends Model
         'gross_pay',
         'cash_advance_deduction',
         'manual_deduction',
+        'prior_balance_deduction',
         'net_pay',
         'notes',
         'status',
@@ -30,13 +31,14 @@ class Payslip extends Model
     ];
 
     protected $casts = [
-        'week_start'             => 'date',
-        'week_end'               => 'date',
-        'daily_rate'             => 'decimal:2',
-        'gross_pay'              => 'decimal:2',
-        'cash_advance_deduction' => 'decimal:2',
-        'manual_deduction'       => 'decimal:2',
-        'net_pay'                => 'decimal:2',
+        'week_start'               => 'date',
+        'week_end'                 => 'date',
+        'daily_rate'               => 'decimal:2',
+        'gross_pay'                => 'decimal:2',
+        'cash_advance_deduction'   => 'decimal:2',
+        'manual_deduction'         => 'decimal:2',
+        'prior_balance_deduction'  => 'decimal:2',
+        'net_pay'                  => 'decimal:2',
     ];
 
     public function rider(): BelongsTo

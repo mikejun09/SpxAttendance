@@ -17,6 +17,7 @@ class Rider extends Model
         'employee_id',
         'contact_number',
         'daily_rate',
+        'carried_balance',
         'is_active',
         'user_id',
         'spx_account_id',
@@ -24,8 +25,9 @@ class Rider extends Model
     ];
 
     protected $casts = [
-        'daily_rate' => 'decimal:2',
-        'is_active'  => 'boolean',
+        'daily_rate'       => 'decimal:2',
+        'carried_balance'  => 'decimal:2',
+        'is_active'        => 'boolean',
     ];
 
     public function user(): BelongsTo

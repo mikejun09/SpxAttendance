@@ -88,5 +88,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/finance/expenses/{expense}', [FinancialController::class, 'destroyExpense'])->name('financials.destroy_expense');
         Route::post('/finance/income', [FinancialController::class, 'storeIncome'])->name('financials.store_income');
         Route::delete('/finance/income/{income}', [FinancialController::class, 'destroyIncome'])->name('financials.destroy_income');
+        Route::post('/finance/clear-balance/{rider}', [FinancialController::class, 'clearBalance'])->name('financials.clear_balance');
     });
 });

@@ -105,8 +105,24 @@ class PayslipController extends Controller
             ->filter(fn($d) => isset($d['label'], $d['amount']) && $d['label'] !== '' && $d['amount'] > 0);
         $manualTotal = $manualDeductions->sum('amount');
 
-        $grossPay = $data['gross_pay'];
-        $netPay   = max(0, $grossPay - $caDeduction - $manualTotal);
+        $grossPay      = $data['gross_pay'];
+        $carriedBalance = (float) $rider->carried_balance;
+
+        // Compute net pay including any prior carried balance
+        $rawNet = $grossPay - $caDeduction - $manualTotal - $carriedBalance;
+
+        if ($rawNet >= 0) {
+            // Rider fully covers carried balance this week
+            $priorBalanceDeduction = $carriedBalance;
+            $netPay                = $rawNet;
+            $newCarriedBalance     = 0;
+        } else {
+            // Still not enough — absorb what we can, carry the rest forward
+            // priorBalanceDeduction = how much of the carried balance was recovered (can't be negative)
+            $priorBalanceDeduction = max(0, $carriedBalance + $rawNet);
+            $netPay                = 0;
+            $newCarriedBalance     = abs($rawNet);
+        }
 
         $payslip = Payslip::create([
             'rider_id'               => $rider->id,
@@ -118,10 +134,14 @@ class PayslipController extends Controller
             'gross_pay'              => $grossPay,
             'cash_advance_deduction' => $caDeduction,
             'manual_deduction'       => $manualTotal,
+            'prior_balance_deduction'=> $priorBalanceDeduction,
             'net_pay'                => $netPay,
             'notes'                  => $validated['notes'] ?? null,
             'status'                 => $validated['status'],
         ]);
+
+        // Update rider's carried balance
+        $rider->update(['carried_balance' => $newCarriedBalance]);
 
         // Attach cash advances and mark as deducted
         if (!empty($caIds)) {
@@ -138,8 +158,13 @@ class PayslipController extends Controller
             ]);
         }
 
+        $successMsg = 'Payslip generated successfully.';
+        if ($newCarriedBalance > 0) {
+            $successMsg .= ' Note: ₱' . number_format($newCarriedBalance, 2) . ' remaining balance will carry over to the next payslip.';
+        }
+
         return redirect()->route('payslips.show', $payslip)
-            ->with('success', 'Payslip generated successfully.');
+            ->with('success', $successMsg);
     }
 
     public function show(Payslip $payslip)
@@ -177,9 +202,18 @@ class PayslipController extends Controller
 
     public function destroy(Payslip $payslip)
     {
+        $rider = $payslip->rider;
+
         // Revert cash advance deducted flag
         $payslip->cashAdvances()->update(['is_deducted' => false]);
         $payslip->cashAdvances()->detach();
+
+        // Restore prior balance back to the rider's carried_balance
+        $priorApplied = (float) $payslip->prior_balance_deduction;
+        if ($priorApplied > 0 && $rider) {
+            $rider->increment('carried_balance', $priorApplied);
+        }
+
         // payslip_deductions cascade-delete automatically
         $payslip->delete();
 
@@ -247,18 +281,21 @@ class PayslipController extends Controller
                 ->whereDate('week_start', $weekStart->toDateString())
                 ->exists();
 
-            $caTotal = $data['pending_ca']->sum('amount');
+            $caTotal         = $data['pending_ca']->sum('amount');
+            $carriedBalance  = $data['carried_balance'];
+            $rawNet          = $data['gross_pay'] - $caTotal - $carriedBalance;
 
             return [
-                'rider'       => $rider,
-                'days_worked' => $data['days_worked'],
-                'half_days'   => $data['half_days'],
-                'total_days'  => $data['total_days'],
-                'gross_pay'   => $data['gross_pay'],
-                'ca_total'    => $caTotal,
-                'pending_ca'  => $data['pending_ca'],
-                'net_pay'     => max(0, $data['gross_pay'] - $caTotal),
-                'existing'    => $existing,
+                'rider'            => $rider,
+                'days_worked'      => $data['days_worked'],
+                'half_days'        => $data['half_days'],
+                'total_days'       => $data['total_days'],
+                'gross_pay'        => $data['gross_pay'],
+                'ca_total'         => $caTotal,
+                'pending_ca'       => $data['pending_ca'],
+                'carried_balance'  => $carriedBalance,
+                'net_pay'          => max(0, $rawNet),
+                'existing'         => $existing,
             ];
         })->filter(fn($row) => $row['total_days'] > 0);
 
@@ -300,23 +337,41 @@ class PayslipController extends Controller
                 ->where('is_deducted', false)
                 ->get();
 
-            $caDeduction = $pendingCa->sum('amount');
-            $netPay      = max(0, $data['gross_pay'] - $caDeduction);
+            $caDeduction    = $pendingCa->sum('amount');
+            $carriedBalance = (float) $rider->carried_balance;
+
+            // Compute net pay including any prior carried balance
+            $rawNet = $data['gross_pay'] - $caDeduction - $carriedBalance;
+
+            if ($rawNet >= 0) {
+                $priorBalanceDeduction = $carriedBalance;
+                $netPay                = $rawNet;
+                $newCarriedBalance     = 0;
+            } else {
+                // priorBalanceDeduction = how much of the carried balance was recovered (can't be negative)
+                $priorBalanceDeduction = max(0, $carriedBalance + $rawNet);
+                $netPay                = 0;
+                $newCarriedBalance     = abs($rawNet);
+            }
 
             $payslip = Payslip::create([
-                'rider_id'               => $rider->id,
-                'week_start'             => $weekStart->toDateString(),
-                'week_end'               => $weekEnd->toDateString(),
-                'days_worked'            => $data['days_worked'],
-                'half_days'              => $data['half_days'],
-                'daily_rate'             => $rider->daily_rate,
-                'gross_pay'              => $data['gross_pay'],
-                'cash_advance_deduction' => $caDeduction,
-                'manual_deduction'       => 0,
-                'net_pay'                => $netPay,
-                'notes'                  => null,
-                'status'                 => $validated['status'],
+                'rider_id'                => $rider->id,
+                'week_start'              => $weekStart->toDateString(),
+                'week_end'                => $weekEnd->toDateString(),
+                'days_worked'             => $data['days_worked'],
+                'half_days'               => $data['half_days'],
+                'daily_rate'              => $rider->daily_rate,
+                'gross_pay'               => $data['gross_pay'],
+                'cash_advance_deduction'  => $caDeduction,
+                'manual_deduction'        => 0,
+                'prior_balance_deduction' => $priorBalanceDeduction,
+                'net_pay'                 => $netPay,
+                'notes'                   => null,
+                'status'                  => $validated['status'],
             ]);
+
+            // Update rider's carried balance
+            $rider->update(['carried_balance' => $newCarriedBalance]);
 
             if ($pendingCa->isNotEmpty()) {
                 $caIds = $pendingCa->pluck('id')->toArray();
@@ -380,12 +435,13 @@ class PayslipController extends Controller
             ->get();
 
         return [
-            'days_worked' => $daysWorked,
-            'half_days'   => $halfDays,
-            'total_days'  => $totalDays,
-            'gross_pay'   => $grossPay,
-            'pending_ca'  => $pendingCa,
-            'attendances' => $attendances->reject(fn($att) => in_array($att->status, ['absent', 'rest_day'])),
+            'days_worked'     => $daysWorked,
+            'half_days'       => $halfDays,
+            'total_days'      => $totalDays,
+            'gross_pay'       => $grossPay,
+            'pending_ca'      => $pendingCa,
+            'carried_balance' => (float) $rider->carried_balance,
+            'attendances'     => $attendances->reject(fn($att) => in_array($att->status, ['absent', 'rest_day'])),
         ];
     }
 }

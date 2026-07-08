@@ -3,18 +3,40 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Models\Rider;
 use App\Models\WeeklyIncome;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class FinancialController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $expenses = Expense::orderBy('date', 'desc')->paginate(15, ['*'], 'expenses_page');
         $incomes  = WeeklyIncome::orderBy('week_start', 'desc')->paginate(15, ['*'], 'incomes_page');
 
-        return view('financials.index', compact('expenses', 'incomes'));
+        // Fetch riders with carried_balance or pending cash advances
+        $ridersQuery = Rider::with(['pendingCashAdvances']);
+        
+        if ($request->filled('rider_search')) {
+            $search = $request->rider_search;
+            $ridersQuery->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('employee_id', 'like', '%' . $search . '%');
+            });
+        }
+        
+        $filterBalance = $request->input('filter_balance', 'has_balance');
+        if ($filterBalance === 'has_balance') {
+            $ridersQuery->where(function($q) {
+                $q->where('carried_balance', '>', 0)
+                  ->orWhereHas('pendingCashAdvances');
+            });
+        }
+        
+        $outstandingRiders = $ridersQuery->orderBy('name')->paginate(15, ['*'], 'riders_page')->withQueryString();
+
+        return view('financials.index', compact('expenses', 'incomes', 'outstandingRiders'));
     }
 
     public function storeExpense(Request $request)
@@ -66,5 +88,13 @@ class FinancialController extends Controller
 
         return redirect()->route('financials.index')
             ->with('success', 'Weekly income record deleted successfully.');
+    }
+
+    public function clearBalance(Rider $rider)
+    {
+        $rider->update(['carried_balance' => 0]);
+
+        return redirect()->route('financials.index', ['active_tab' => 'balances'])
+            ->with('success', "Outstanding balance for {$rider->name} has been cleared.");
     }
 }

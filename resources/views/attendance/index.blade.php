@@ -7,7 +7,7 @@
 <div class="page-header">
     <div><h1>Attendance Records</h1><p>Filtered by date</p></div>
     <a href="{{ route('attendance.daily', today()->toDateString()) }}" class="btn btn-primary">
-        <i class="fa-solid fa-calendar-day"></i> Mark Today
+        <i class="fa-solid fa-calendar-day"></i> Create Attendance
     </a>
 </div>
 
@@ -39,8 +39,6 @@
             <select name="status">
                 <option value="">All Status</option>
                 <option value="present"  {{ request('status') === 'present'  ? 'selected' : '' }}>Present</option>
-                <option value="absent"   {{ request('status') === 'absent'   ? 'selected' : '' }}>Absent</option>
-                <option value="half_day" {{ request('status') === 'half_day' ? 'selected' : '' }}>Half Day</option>
                 <option value="rest_day" {{ request('status') === 'rest_day' ? 'selected' : '' }}>Rest Day</option>
             </select>
         </div>
@@ -81,7 +79,7 @@
                         </td>
                         <td>
                             @if($att->spxAccount)
-                                <span class="badge badge-accent">{{ $att->spxAccount->account_code }}</span>
+                                <span class="badge badge-accent">{{ $att->spxAccount->account_name }}</span>
                             @else
                                 <span style="color:var(--text-muted);">—</span>
                             @endif
