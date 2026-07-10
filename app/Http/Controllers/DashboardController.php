@@ -75,14 +75,37 @@ class DashboardController extends Controller
         $weeklyFinancials['net_profit'] = $weeklyFinancials['income'] - $weeklyFinancials['total_expenses'];
 
         // Monthly Calculations
+        //
+        // Business rule: "Last week's payslip is deducted from this week's income."
+        // This means Income and Payslip salary must be assigned to months differently:
+        //
+        // INCOME: assigned to the month containing the week's own Thursday (week_start + 3).
+        //   → query range shift: -3 days on both month boundaries.
+        //
+        // PAYSLIP SALARY: assigned to the month containing the *next* week's Thursday
+        //   (week_start + 3 + 7 = week_start + 10), since the salary is paid/deducted
+        //   from the following week's income collection.
+        //   → query range shift: -10 days on both month boundaries.
+        //
+        // Misc expenses and cash advances are date-based records, so they stay
+        // tied to their actual calendar date within the selected month.
+
+        // Income: Thursday of its own week (week_start + 3 days)
+        $incomeMonthStart  = \Carbon\Carbon::parse($monthStart)->subDays(3)->toDateString();
+        $incomeMonthEnd    = \Carbon\Carbon::parse($monthEnd)->subDays(3)->toDateString();
+
+        // Payslip: Thursday of the *next* week (week_start + 10 days)
+        $payslipMonthStart = \Carbon\Carbon::parse($monthStart)->subDays(10)->toDateString();
+        $payslipMonthEnd   = \Carbon\Carbon::parse($monthEnd)->subDays(10)->toDateString();
+
         $monthlyFinancials = [
             'misc_expenses' => Expense::whereBetween('date', [$monthStart, $monthEnd])->sum('amount'),
             'cash_advances' => CashAdvance::whereBetween('date', [$monthStart, $monthEnd])->sum('amount'),
-            'gross_salary'  => Payslip::whereBetween('week_start', [$monthStart, $monthEnd])->sum('gross_pay'),
-            'net_salary'    => Payslip::whereBetween('week_start', [$monthStart, $monthEnd])->sum('net_pay'),
-            'deductions'    => Payslip::whereBetween('week_start', [$monthStart, $monthEnd])->sum('manual_deduction'),
-            'ca_deductions' => Payslip::whereBetween('week_start', [$monthStart, $monthEnd])->sum('cash_advance_deduction'),
-            'income'        => WeeklyIncome::whereBetween('week_start', [$monthStart, $monthEnd])->sum('amount'),
+            'gross_salary'  => Payslip::whereBetween('week_start', [$payslipMonthStart, $payslipMonthEnd])->sum('gross_pay'),
+            'net_salary'    => Payslip::whereBetween('week_start', [$payslipMonthStart, $payslipMonthEnd])->sum('net_pay'),
+            'deductions'    => Payslip::whereBetween('week_start', [$payslipMonthStart, $payslipMonthEnd])->sum('manual_deduction'),
+            'ca_deductions' => Payslip::whereBetween('week_start', [$payslipMonthStart, $payslipMonthEnd])->sum('cash_advance_deduction'),
+            'income'        => WeeklyIncome::whereBetween('week_start', [$incomeMonthStart, $incomeMonthEnd])->sum('amount'),
         ];
 
         $monthlyFinancials['total_expenses'] = $monthlyFinancials['misc_expenses']
