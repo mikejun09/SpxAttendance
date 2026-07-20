@@ -38,6 +38,7 @@
             color: var(--text-primary);
             min-height: 100vh;
             display: flex;
+            overflow-x: hidden;
         }
 
         .sidebar {
@@ -48,8 +49,24 @@
             flex-direction: column;
             position: fixed;
             top: 0; left: 0; bottom: 0;
-            z-index: 100;
+            z-index: 1000;
+            transition: transform 0.3s ease;
         }
+
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); box-shadow: none; }
+            .sidebar.active { transform: translateX(0); box-shadow: 8px 0 40px rgba(0,0,0,.7); }
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,.6);
+            z-index: 900;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+        .sidebar-overlay.active { display: block; }
 
         .sidebar-logo {
             padding: 24px 20px 20px;
@@ -127,23 +144,31 @@
 
         .btn-logout:hover { background: rgba(239,68,68,.1); border-color: var(--danger); color: var(--danger); }
 
-        .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .main { transition: margin-left 0.3s ease; }
+        @media (min-width: 993px) { .main { margin-left: var(--sidebar-w); } }
 
         .topbar {
             height: 64px; background: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 28px; position: sticky; top: 0; z-index: 50;
+            padding: 0 20px; position: sticky; top: 0; z-index: 500;
         }
+
+        .hamburger {
+            display: none; background: transparent; border: 1px solid var(--border);
+            color: var(--text-primary); padding: 8px 12px; border-radius: 6px; cursor: pointer;
+        }
+        @media (max-width: 992px) { .hamburger { display: block; } }
 
         .page-title { font-size: 18px; font-weight: 700; }
         .page-title .breadcrumb { font-size: 12px; color: var(--text-muted); font-weight: 400; margin-top: 2px; }
         .topbar-right { display: flex; align-items: center; gap: 12px; }
 
-        .content { padding: 28px; flex: 1; }
+        .content { padding: 20px; }
+        @media (min-width: 768px) { .content { padding: 28px; } }
 
         .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
-        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
         .card-title { font-size: 16px; font-weight: 600; }
 
         .btn {
@@ -217,72 +242,14 @@
             box-shadow: 0 0 0 3px rgba(249,115,22,.15);
         }
 
-        /* ── Date picker component ───────────────────────────────────── */
-        .date-picker {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-        }
+        .date-picker { position: relative; display: inline-flex; align-items: center; }
         .date-picker input[type="date"] {
-            width: auto;
-            padding: 9px 14px 9px 40px;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            background: var(--bg-card);
-            color: var(--text-primary);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: border-color .2s, box-shadow .2s, background .2s;
-            appearance: none;
-            -webkit-appearance: none;
-            min-width: 160px;
+            width: auto; padding: 9px 14px 9px 40px; border: 1.5px solid var(--border);
+            border-radius: 10px; background: var(--bg-card); color: var(--text-primary);
+            font-size: 14px; font-weight: 500; cursor: pointer;
         }
-        .date-picker input[type="date"]:hover {
-            border-color: var(--accent);
-            background: var(--bg-hover);
-        }
-        .date-picker input[type="date"]:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(249,115,22,.18);
-            background: var(--bg-hover);
-        }
-        .date-picker .dp-icon {
-            position: absolute;
-            left: 12px;
-            color: var(--accent);
-            font-size: 14px;
-            pointer-events: none;
-            z-index: 1;
-        }
-        /* Native date picker calendar icon — hide Chrome's default */
-        .date-picker input[type="date"]::-webkit-calendar-picker-indicator {
-            position: absolute;
-            right: 0;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-        /* Full-width date picker variant */
-        .date-picker.full { display: flex; }
-        .date-picker.full input[type="date"] { width: 100%; }
 
-        /* Large prominent date picker (for navigation headers) */
-        .date-picker-lg input[type="date"] {
-            font-size: 15px;
-            font-weight: 600;
-            padding: 10px 16px 10px 44px;
-            border-radius: 12px;
-            min-width: 200px;
-        }
-        .date-picker-lg .dp-icon { font-size: 16px; left: 14px; }
-
-        select option { background: var(--bg-card); }
+        .date-picker .dp-icon { position: absolute; left: 12px; color: var(--accent); }
 
         .form-check { display: flex; align-items: center; gap: 10px; cursor: pointer; }
 
@@ -305,17 +272,14 @@
         .pagination a:hover { background: var(--bg-hover); color: var(--text-primary); }
 
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
-
         .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; align-items: flex-start; gap: 16px; transition: transform .2s, box-shadow .2s; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-
         .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
         .stat-icon-orange { background: rgba(249,115,22,.15); color: var(--accent); }
         .stat-icon-green  { background: rgba(34,197,94,.15);  color: var(--success); }
         .stat-icon-red    { background: rgba(239,68,68,.15);  color: var(--danger); }
         .stat-icon-blue   { background: rgba(56,189,248,.15); color: var(--info); }
         .stat-icon-yellow { background: rgba(245,158,11,.15); color: var(--warning); }
-
         .stat-value { font-size: 28px; font-weight: 800; line-height: 1; }
         .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
@@ -342,17 +306,48 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .content > * { animation: fadeIn .3s ease; }
 
+        /* ── Tablet (≤ 1024px) ─────────────────── */
+        @media (max-width: 1024px) {
+            .topbar { padding: 0 20px; }
+        }
+
+        /* ── Mobile (≤ 768px) ──────────────────── */
         @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .main { margin-left: 0; }
             .form-row-2, .form-row-3 { grid-template-columns: 1fr; }
+            .topbar-right span { display: none; }
+            .content { padding: 16px; }
+            .card { padding: 16px; }
+            .page-header h1 { font-size: 18px; }
+            .page-header { margin-bottom: 16px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+            .stat-card { padding: 14px; gap: 10px; }
+            .stat-icon { width: 40px; height: 40px; font-size: 17px; border-radius: 10px; }
+            .stat-value { font-size: 22px; }
+            .filter-bar select, .filter-bar input { min-width: 0; }
+            th, td { padding: 10px 12px; font-size: 13px; }
+            .table-wrap { -webkit-overflow-scrolling: touch; }
+            .date-picker { display: flex; width: 100%; }
+            .date-picker input[type="date"] { width: 100%; min-width: 0; }
+            .btn { font-size: 13px; padding: 8px 14px; }
+        }
+
+        /* ── Small mobile (≤ 480px) ────────────── */
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .hide-xs { display: none !important; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .page-header .btn { width: 100%; justify-content: center; }
+            .nav-item { padding: 12px 14px; font-size: 15px; }
+            .btn-sm { padding: 5px 10px; font-size: 11.5px; }
         }
     </style>
     @stack('styles')
 </head>
 <body>
 
-<aside class="sidebar">
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
         <div class="logo-icon">🚴</div>
         <div>
@@ -430,6 +425,9 @@
 
 <div class="main">
     <header class="topbar">
+        <button class="hamburger" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
         <div class="page-title">
             @yield('page-title', 'Dashboard')
             <div class="breadcrumb">@yield('breadcrumb', 'SPX Attendance System')</div>
@@ -463,6 +461,46 @@
     </div>
 </div>
 
+<script>
+    const sidebar   = document.getElementById('sidebar');
+    const overlay   = document.querySelector('.sidebar-overlay');
+
+    function openSidebar() {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    function toggleSidebar() {
+        sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
+    }
+
+    // Close on overlay click
+    overlay.addEventListener('click', closeSidebar);
+
+    // Close on Escape key
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+
+    // Auto-close sidebar when a nav link is tapped (mobile)
+    sidebar.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 992) closeSidebar();
+        });
+    });
+
+    // Reset sidebar state on desktop resize
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 992) {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+</script>
 @stack('scripts')
 </body>
 </html>
