@@ -37,96 +37,76 @@ CREATE TABLE IF NOT EXISTS `attendances` (
   CONSTRAINT `attendances_admin_id_foreign` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `attendances_rider_id_foreign` FOREIGN KEY (`rider_id`) REFERENCES `riders` (`id`) ON DELETE CASCADE,
   CONSTRAINT `attendances_spx_account_id_foreign` FOREIGN KEY (`spx_account_id`) REFERENCES `spx_accounts` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table spx_attendance.attendances: ~4 rows (approximately)
+-- Dumping data for table spx_attendance.attendances: ~62 rows (approximately)
 REPLACE INTO `attendances` (`id`, `admin_id`, `rider_id`, `spx_account_id`, `date`, `status`, `notes`, `created_at`, `updated_at`) VALUES
-	(3, 1, 6, 3, '2026-06-01', 'present', NULL, '2026-07-06 16:55:56', '2026-07-06 16:55:56'),
-	(4, 1, 5, 3, '2026-06-01', 'present', NULL, '2026-07-06 16:55:56', '2026-07-06 16:55:56'),
-	(5, 1, 3, 3, '2026-06-02', 'present', NULL, '2026-07-06 16:56:11', '2026-07-06 16:56:11'),
-	(6, 1, 4, NULL, '2026-06-02', 'rest_day', NULL, '2026-07-06 16:56:11', '2026-07-06 16:56:11'),
-	(7, 1, 6, NULL, '2026-06-02', 'rest_day', NULL, '2026-07-06 16:56:11', '2026-07-06 16:56:11'),
-	(8, 1, 5, 3, '2026-06-02', 'present', NULL, '2026-07-06 16:56:11', '2026-07-06 16:56:11'),
-	(9, 1, 3, 3, '2026-06-03', 'present', NULL, '2026-07-06 16:56:28', '2026-07-06 16:56:28'),
-	(10, 1, 4, NULL, '2026-06-03', 'rest_day', NULL, '2026-07-06 16:56:28', '2026-07-06 16:56:28'),
-	(11, 1, 6, NULL, '2026-06-03', 'rest_day', NULL, '2026-07-06 16:56:28', '2026-07-06 16:56:28'),
-	(12, 1, 5, 3, '2026-06-03', 'present', NULL, '2026-07-06 16:56:28', '2026-07-06 16:56:28'),
-	(13, 1, 3, 3, '2026-06-08', 'present', NULL, '2026-07-06 16:56:53', '2026-07-06 16:56:53'),
-	(14, 1, 4, 3, '2026-06-08', 'present', NULL, '2026-07-06 16:56:53', '2026-07-06 16:56:53'),
-	(15, 1, 6, NULL, '2026-06-08', 'rest_day', NULL, '2026-07-06 16:56:53', '2026-07-06 16:56:53'),
-	(16, 1, 5, NULL, '2026-06-08', 'rest_day', NULL, '2026-07-06 16:56:53', '2026-07-06 16:56:53'),
-	(17, 1, 3, 3, '2026-06-10', 'present', NULL, '2026-07-06 16:57:03', '2026-07-06 16:57:03'),
-	(18, 1, 4, 3, '2026-06-10', 'present', NULL, '2026-07-06 16:57:03', '2026-07-06 16:57:03'),
-	(19, 1, 6, NULL, '2026-06-10', 'rest_day', NULL, '2026-07-06 16:57:03', '2026-07-06 16:57:03'),
-	(20, 1, 5, NULL, '2026-06-10', 'rest_day', NULL, '2026-07-06 16:57:03', '2026-07-06 16:57:03'),
-	(21, 1, 3, 3, '2026-06-11', 'present', NULL, '2026-07-06 16:57:13', '2026-07-06 16:57:13'),
-	(22, 1, 4, 3, '2026-06-11', 'present', NULL, '2026-07-06 16:57:13', '2026-07-06 16:57:13'),
-	(23, 1, 6, NULL, '2026-06-11', 'rest_day', NULL, '2026-07-06 16:57:13', '2026-07-06 16:57:13'),
-	(24, 1, 5, NULL, '2026-06-11', 'rest_day', NULL, '2026-07-06 16:57:13', '2026-07-06 16:57:13'),
-	(25, 1, 3, 3, '2026-06-13', 'present', NULL, '2026-07-06 16:57:30', '2026-07-06 16:57:30'),
-	(26, 1, 4, 3, '2026-06-13', 'present', NULL, '2026-07-06 16:57:30', '2026-07-06 16:57:30'),
-	(27, 1, 6, NULL, '2026-06-13', 'rest_day', NULL, '2026-07-06 16:57:30', '2026-07-06 16:57:30'),
-	(28, 1, 5, NULL, '2026-06-13', 'rest_day', NULL, '2026-07-06 16:57:30', '2026-07-06 16:57:30'),
-	(29, 1, 3, 3, '2026-06-15', 'present', NULL, '2026-07-06 16:57:49', '2026-07-06 16:57:49'),
-	(30, 1, 4, 3, '2026-06-15', 'present', NULL, '2026-07-06 16:57:49', '2026-07-06 16:57:49'),
-	(31, 1, 6, NULL, '2026-06-15', 'rest_day', NULL, '2026-07-06 16:57:49', '2026-07-06 16:57:49'),
-	(32, 1, 5, NULL, '2026-06-15', 'rest_day', NULL, '2026-07-06 16:57:49', '2026-07-06 16:57:49'),
-	(33, 1, 3, 3, '2026-06-16', 'present', NULL, '2026-07-06 16:57:57', '2026-07-06 16:57:57'),
-	(34, 1, 4, 3, '2026-06-16', 'present', NULL, '2026-07-06 16:57:57', '2026-07-06 16:57:57'),
-	(35, 1, 6, NULL, '2026-06-16', 'rest_day', NULL, '2026-07-06 16:57:57', '2026-07-06 16:57:57'),
-	(36, 1, 5, NULL, '2026-06-16', 'rest_day', NULL, '2026-07-06 16:57:57', '2026-07-06 16:57:57'),
-	(37, 1, 3, 3, '2026-06-18', 'present', NULL, '2026-07-06 16:58:32', '2026-07-06 16:58:32'),
-	(38, 1, 4, 3, '2026-06-18', 'present', NULL, '2026-07-06 16:58:32', '2026-07-06 16:58:32'),
-	(39, 1, 6, NULL, '2026-06-18', 'rest_day', NULL, '2026-07-06 16:58:32', '2026-07-06 16:58:32'),
-	(40, 1, 5, NULL, '2026-06-18', 'rest_day', NULL, '2026-07-06 16:58:32', '2026-07-06 16:58:32'),
-	(41, 1, 3, 3, '2026-06-19', 'present', NULL, '2026-07-06 16:58:41', '2026-07-06 16:58:41'),
-	(42, 1, 4, 3, '2026-06-19', 'present', NULL, '2026-07-06 16:58:42', '2026-07-06 16:58:42'),
-	(43, 1, 6, NULL, '2026-06-19', 'rest_day', NULL, '2026-07-06 16:58:42', '2026-07-06 16:58:42'),
-	(44, 1, 5, NULL, '2026-06-19', 'rest_day', NULL, '2026-07-06 16:58:42', '2026-07-06 16:58:42'),
-	(45, 1, 3, 3, '2026-06-20', 'present', NULL, '2026-07-06 16:58:50', '2026-07-06 16:58:50'),
-	(46, 1, 4, 3, '2026-06-20', 'present', NULL, '2026-07-06 16:58:50', '2026-07-06 16:58:50'),
-	(47, 1, 6, NULL, '2026-06-20', 'rest_day', NULL, '2026-07-06 16:58:50', '2026-07-06 16:58:50'),
-	(48, 1, 5, NULL, '2026-06-20', 'rest_day', NULL, '2026-07-06 16:58:50', '2026-07-06 16:58:50'),
-	(49, 1, 3, 3, '2026-06-22', 'present', NULL, '2026-07-06 16:59:07', '2026-07-06 16:59:07'),
-	(50, 1, 4, 3, '2026-06-22', 'present', NULL, '2026-07-06 16:59:07', '2026-07-06 16:59:07'),
-	(51, 1, 6, NULL, '2026-06-22', 'rest_day', NULL, '2026-07-06 16:59:07', '2026-07-06 16:59:07'),
-	(52, 1, 5, NULL, '2026-06-22', 'rest_day', NULL, '2026-07-06 16:59:07', '2026-07-06 16:59:07'),
-	(53, 1, 3, 3, '2026-06-23', 'present', NULL, '2026-07-06 16:59:14', '2026-07-06 16:59:14'),
-	(54, 1, 4, 3, '2026-06-23', 'present', NULL, '2026-07-06 16:59:14', '2026-07-06 16:59:14'),
-	(55, 1, 6, NULL, '2026-06-23', 'rest_day', NULL, '2026-07-06 16:59:14', '2026-07-06 16:59:14'),
-	(56, 1, 5, NULL, '2026-06-23', 'rest_day', NULL, '2026-07-06 16:59:14', '2026-07-06 16:59:14'),
-	(57, 1, 3, 3, '2026-06-25', 'present', NULL, '2026-07-06 16:59:22', '2026-07-06 16:59:22'),
-	(58, 1, 4, 3, '2026-06-25', 'present', NULL, '2026-07-06 16:59:22', '2026-07-06 16:59:22'),
-	(59, 1, 6, NULL, '2026-06-25', 'rest_day', NULL, '2026-07-06 16:59:22', '2026-07-06 16:59:22'),
-	(60, 1, 5, NULL, '2026-06-25', 'rest_day', NULL, '2026-07-06 16:59:22', '2026-07-06 16:59:22'),
-	(61, 1, 3, 3, '2026-06-26', 'present', NULL, '2026-07-06 16:59:31', '2026-07-06 16:59:31'),
-	(62, 1, 4, 3, '2026-06-26', 'present', NULL, '2026-07-06 16:59:31', '2026-07-06 16:59:31'),
-	(63, 1, 6, NULL, '2026-06-26', 'rest_day', NULL, '2026-07-06 16:59:31', '2026-07-06 16:59:31'),
-	(64, 1, 5, NULL, '2026-06-26', 'rest_day', NULL, '2026-07-06 16:59:31', '2026-07-06 16:59:31'),
-	(65, 1, 3, 3, '2026-06-29', 'present', NULL, '2026-07-06 17:00:08', '2026-07-06 17:00:08'),
-	(66, 1, 4, 3, '2026-06-29', 'present', NULL, '2026-07-06 17:00:08', '2026-07-06 17:00:08'),
-	(67, 1, 6, NULL, '2026-06-29', 'rest_day', NULL, '2026-07-06 17:00:08', '2026-07-06 17:00:08'),
-	(68, 1, 5, NULL, '2026-06-29', 'rest_day', NULL, '2026-07-06 17:00:08', '2026-07-06 17:00:08'),
-	(69, 1, 3, 3, '2026-06-30', 'present', NULL, '2026-07-06 17:00:18', '2026-07-06 17:00:18'),
-	(70, 1, 4, 3, '2026-06-30', 'present', NULL, '2026-07-06 17:00:18', '2026-07-06 17:00:18'),
-	(71, 1, 6, NULL, '2026-06-30', 'rest_day', NULL, '2026-07-06 17:00:18', '2026-07-06 17:00:18'),
-	(72, 1, 5, NULL, '2026-06-30', 'rest_day', NULL, '2026-07-06 17:00:18', '2026-07-06 17:00:18'),
-	(73, 1, 3, 3, '2026-07-01', 'present', 'solo', '2026-07-06 17:00:48', '2026-07-06 17:00:48'),
-	(74, 1, 4, NULL, '2026-07-01', 'rest_day', NULL, '2026-07-06 17:00:48', '2026-07-06 17:00:48'),
-	(75, 1, 6, NULL, '2026-07-01', 'rest_day', NULL, '2026-07-06 17:00:48', '2026-07-06 17:00:48'),
-	(76, 1, 5, NULL, '2026-07-01', 'rest_day', NULL, '2026-07-06 17:00:48', '2026-07-06 17:00:48'),
-	(77, 1, 3, 4, '2026-07-04', 'present', NULL, '2026-07-06 17:01:10', '2026-07-06 17:01:10'),
-	(78, 1, 4, 4, '2026-07-04', 'present', NULL, '2026-07-06 17:01:10', '2026-07-06 17:01:10'),
-	(79, 1, 6, NULL, '2026-07-04', 'rest_day', NULL, '2026-07-06 17:01:10', '2026-07-06 17:01:10'),
-	(80, 1, 5, NULL, '2026-07-04', 'rest_day', NULL, '2026-07-06 17:01:10', '2026-07-06 17:01:10'),
-	(81, 1, 3, 4, '2026-07-06', 'present', NULL, '2026-07-06 17:01:27', '2026-07-06 17:01:27'),
-	(82, 1, 4, 4, '2026-07-06', 'present', NULL, '2026-07-06 17:01:27', '2026-07-06 17:01:27'),
-	(83, 1, 6, NULL, '2026-07-06', 'rest_day', NULL, '2026-07-06 17:01:27', '2026-07-06 17:01:27'),
-	(84, 1, 5, NULL, '2026-07-06', 'rest_day', NULL, '2026-07-06 17:01:27', '2026-07-06 17:01:27'),
-	(85, 1, 3, 4, '2026-07-07', 'present', NULL, '2026-07-06 17:01:37', '2026-07-06 17:01:37'),
-	(90, 1, 4, NULL, '2026-07-07', 'rest_day', NULL, '2026-07-06 22:39:38', '2026-07-06 22:39:38'),
-	(91, 1, 6, NULL, '2026-07-07', 'rest_day', NULL, '2026-07-06 22:39:38', '2026-07-06 22:39:38'),
-	(92, 1, 5, NULL, '2026-07-07', 'rest_day', NULL, '2026-07-06 22:39:38', '2026-07-06 22:39:38');
+	(1, 1, 3, 3, '2026-06-29', 'present', NULL, '2026-07-09 16:57:27', '2026-07-09 16:57:27'),
+	(2, 1, 4, 3, '2026-06-29', 'present', NULL, '2026-07-09 16:57:27', '2026-07-09 16:57:27'),
+	(3, 1, 6, NULL, '2026-06-29', 'rest_day', NULL, '2026-07-09 16:57:27', '2026-07-09 16:57:27'),
+	(4, 1, 5, NULL, '2026-06-29', 'rest_day', NULL, '2026-07-09 16:57:27', '2026-07-09 16:57:27'),
+	(5, 1, 3, 3, '2026-06-30', 'present', NULL, '2026-07-09 16:57:57', '2026-07-09 16:57:57'),
+	(6, 1, 4, 3, '2026-06-30', 'present', NULL, '2026-07-09 16:57:57', '2026-07-09 16:57:57'),
+	(7, 1, 6, NULL, '2026-06-30', 'rest_day', NULL, '2026-07-09 16:57:57', '2026-07-09 16:57:57'),
+	(8, 1, 5, NULL, '2026-06-30', 'rest_day', NULL, '2026-07-09 16:57:57', '2026-07-09 16:57:57'),
+	(9, 1, 3, 3, '2026-07-01', 'present', NULL, '2026-07-09 16:58:06', '2026-07-09 16:58:06'),
+	(10, 1, 4, NULL, '2026-07-01', 'rest_day', NULL, '2026-07-09 16:58:07', '2026-07-09 16:58:07'),
+	(11, 1, 6, NULL, '2026-07-01', 'rest_day', NULL, '2026-07-09 16:58:07', '2026-07-09 16:58:07'),
+	(12, 1, 5, NULL, '2026-07-01', 'rest_day', NULL, '2026-07-09 16:58:07', '2026-07-09 16:58:07'),
+	(13, 1, 3, 4, '2026-07-04', 'present', NULL, '2026-07-09 16:58:16', '2026-07-09 16:58:16'),
+	(14, 1, 4, 4, '2026-07-04', 'present', NULL, '2026-07-09 16:58:16', '2026-07-09 16:58:16'),
+	(15, 1, 6, NULL, '2026-07-04', 'rest_day', NULL, '2026-07-09 16:58:16', '2026-07-09 16:58:16'),
+	(16, 1, 5, NULL, '2026-07-04', 'rest_day', NULL, '2026-07-09 16:58:16', '2026-07-09 16:58:16'),
+	(17, 1, 3, 4, '2026-07-06', 'present', NULL, '2026-07-12 18:17:30', '2026-07-12 18:17:30'),
+	(18, 1, 4, 4, '2026-07-06', 'present', NULL, '2026-07-12 18:17:31', '2026-07-12 18:17:31'),
+	(19, 1, 6, NULL, '2026-07-06', 'rest_day', NULL, '2026-07-12 18:17:31', '2026-07-12 18:17:31'),
+	(20, 1, 5, NULL, '2026-07-06', 'rest_day', NULL, '2026-07-12 18:17:31', '2026-07-12 18:17:31'),
+	(21, 1, 3, 4, '2026-07-07', 'present', NULL, '2026-07-12 18:17:40', '2026-07-12 18:17:40'),
+	(22, 1, 4, NULL, '2026-07-07', 'rest_day', NULL, '2026-07-12 18:17:40', '2026-07-12 18:17:40'),
+	(23, 1, 6, NULL, '2026-07-07', 'rest_day', NULL, '2026-07-12 18:17:40', '2026-07-12 18:17:40'),
+	(24, 1, 5, NULL, '2026-07-07', 'rest_day', NULL, '2026-07-12 18:17:40', '2026-07-12 18:17:40'),
+	(25, 1, 3, 4, '2026-07-08', 'present', NULL, '2026-07-12 18:17:49', '2026-07-12 18:17:49'),
+	(26, 1, 4, 4, '2026-07-08', 'present', NULL, '2026-07-12 18:17:49', '2026-07-12 18:17:49'),
+	(27, 1, 6, NULL, '2026-07-08', 'rest_day', NULL, '2026-07-12 18:17:49', '2026-07-12 18:17:49'),
+	(28, 1, 5, NULL, '2026-07-08', 'rest_day', NULL, '2026-07-12 18:17:49', '2026-07-12 18:17:49'),
+	(29, 1, 3, 4, '2026-07-09', 'present', NULL, '2026-07-12 18:18:06', '2026-07-12 18:18:06'),
+	(30, 1, 4, 4, '2026-07-09', 'present', NULL, '2026-07-12 18:18:06', '2026-07-12 18:18:06'),
+	(31, 1, 6, NULL, '2026-07-09', 'rest_day', NULL, '2026-07-12 18:18:06', '2026-07-12 18:18:06'),
+	(32, 1, 5, NULL, '2026-07-09', 'rest_day', NULL, '2026-07-12 18:18:06', '2026-07-12 18:18:06'),
+	(33, 1, 3, 4, '2026-07-10', 'present', NULL, '2026-07-12 18:18:14', '2026-07-12 18:18:14'),
+	(34, 1, 4, 4, '2026-07-10', 'present', NULL, '2026-07-12 18:18:14', '2026-07-12 18:18:14'),
+	(35, 1, 6, NULL, '2026-07-10', 'rest_day', NULL, '2026-07-12 18:18:14', '2026-07-12 18:18:14'),
+	(36, 1, 5, NULL, '2026-07-10', 'rest_day', NULL, '2026-07-12 18:18:14', '2026-07-12 18:18:14'),
+	(37, 1, 3, 3, '2026-07-13', 'present', NULL, '2026-07-12 21:41:32', '2026-07-12 21:41:32'),
+	(38, 1, 4, NULL, '2026-07-13', 'rest_day', NULL, '2026-07-12 21:41:32', '2026-07-12 21:41:32'),
+	(39, 1, 6, NULL, '2026-07-13', 'rest_day', NULL, '2026-07-12 21:41:32', '2026-07-12 21:41:32'),
+	(40, 1, 8, 3, '2026-07-13', 'present', NULL, '2026-07-12 21:41:32', '2026-07-12 21:41:32'),
+	(41, 1, 5, NULL, '2026-07-13', 'rest_day', NULL, '2026-07-12 21:41:32', '2026-07-12 21:41:32'),
+	(42, 1, 3, 3, '2026-07-14', 'present', NULL, '2026-07-13 16:47:08', '2026-07-13 16:47:08'),
+	(43, 1, 4, NULL, '2026-07-14', 'rest_day', NULL, '2026-07-13 16:47:08', '2026-07-13 16:47:08'),
+	(44, 1, 6, NULL, '2026-07-14', 'rest_day', NULL, '2026-07-13 16:47:08', '2026-07-13 16:47:08'),
+	(45, 1, 8, NULL, '2026-07-14', 'rest_day', NULL, '2026-07-13 16:47:08', '2026-07-13 16:47:08'),
+	(46, 1, 5, NULL, '2026-07-14', 'rest_day', NULL, '2026-07-13 16:47:08', '2026-07-13 16:47:08'),
+	(47, 1, 3, NULL, '2026-07-15', 'rest_day', 'no parcel', '2026-07-14 17:38:10', '2026-07-14 17:38:10'),
+	(48, 1, 4, NULL, '2026-07-15', 'rest_day', 'no parcel', '2026-07-14 17:38:10', '2026-07-14 17:38:10'),
+	(49, 1, 6, NULL, '2026-07-15', 'rest_day', 'no parcel', '2026-07-14 17:38:10', '2026-07-14 17:38:10'),
+	(50, 1, 8, NULL, '2026-07-15', 'rest_day', 'no parcel', '2026-07-14 17:38:10', '2026-07-14 17:38:10'),
+	(51, 1, 5, NULL, '2026-07-15', 'rest_day', 'no parcel', '2026-07-14 17:38:10', '2026-07-14 17:38:10'),
+	(52, 1, 3, 4, '2026-07-17', 'present', NULL, '2026-07-16 16:41:03', '2026-07-16 16:41:03'),
+	(53, 1, 4, NULL, '2026-07-17', 'rest_day', NULL, '2026-07-16 16:41:03', '2026-07-16 16:41:03'),
+	(54, 1, 6, NULL, '2026-07-17', 'rest_day', NULL, '2026-07-16 16:41:03', '2026-07-16 16:41:03'),
+	(55, 1, 8, NULL, '2026-07-17', 'rest_day', NULL, '2026-07-16 16:41:03', '2026-07-16 16:41:03'),
+	(56, 1, 5, NULL, '2026-07-17', 'rest_day', NULL, '2026-07-16 16:41:03', '2026-07-16 16:41:03'),
+	(57, 1, 3, 3, '2026-07-16', 'present', NULL, '2026-07-16 16:41:44', '2026-07-16 16:41:44'),
+	(58, 1, 4, 3, '2026-07-16', 'present', NULL, '2026-07-16 16:41:44', '2026-07-16 16:41:44'),
+	(59, 1, 6, NULL, '2026-07-16', 'rest_day', NULL, '2026-07-16 16:41:44', '2026-07-16 16:41:44'),
+	(60, 1, 8, NULL, '2026-07-16', 'rest_day', NULL, '2026-07-16 16:41:44', '2026-07-16 16:41:44'),
+	(61, 1, 5, NULL, '2026-07-16', 'rest_day', NULL, '2026-07-16 16:41:44', '2026-07-16 16:41:44'),
+	(62, 1, 3, 3, '2026-07-18', 'present', NULL, '2026-07-19 16:10:01', '2026-07-19 16:10:01'),
+	(63, 1, 4, NULL, '2026-07-18', 'rest_day', NULL, '2026-07-19 16:10:01', '2026-07-19 16:10:01'),
+	(64, 1, 6, NULL, '2026-07-18', 'rest_day', NULL, '2026-07-19 16:10:01', '2026-07-19 16:10:01'),
+	(65, 1, 8, 3, '2026-07-18', 'present', NULL, '2026-07-19 16:10:01', '2026-07-19 16:10:01'),
+	(66, 1, 5, NULL, '2026-07-18', 'rest_day', NULL, '2026-07-19 16:10:01', '2026-07-19 16:10:01');
 
 -- Dumping structure for table spx_attendance.cache
 CREATE TABLE IF NOT EXISTS `cache` (
@@ -137,10 +117,7 @@ CREATE TABLE IF NOT EXISTS `cache` (
   KEY `cache_expiration_index` (`expiration`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table spx_attendance.cache: ~2 rows (approximately)
-REPLACE INTO `cache` (`key`, `value`, `expiration`) VALUES
-	('laravel-cache-mike@spx.com|127.0.0.1', 'i:1;', 1783385321),
-	('laravel-cache-mike@spx.com|127.0.0.1:timer', 'i:1783385321;', 1783385321);
+-- Dumping data for table spx_attendance.cache: ~0 rows (approximately)
 
 -- Dumping structure for table spx_attendance.cache_locks
 CREATE TABLE IF NOT EXISTS `cache_locks` (
@@ -169,11 +146,11 @@ CREATE TABLE IF NOT EXISTS `cash_advances` (
   KEY `cash_advances_admin_id_foreign` (`admin_id`),
   CONSTRAINT `cash_advances_admin_id_foreign` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `cash_advances_rider_id_foreign` FOREIGN KEY (`rider_id`) REFERENCES `riders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table spx_attendance.cash_advances: ~1 rows (approximately)
+-- Dumping data for table spx_attendance.cash_advances: ~2 rows (approximately)
 REPLACE INTO `cash_advances` (`id`, `admin_id`, `rider_id`, `amount`, `date`, `notes`, `is_deducted`, `created_at`, `updated_at`) VALUES
-	(2, 1, 4, 1000.00, '2026-06-10', NULL, 1, '2026-07-06 17:02:04', '2026-07-06 17:06:57');
+	(5, 1, 8, 100.00, '2026-07-18', 'food', 1, '2026-07-19 16:10:20', '2026-07-19 16:35:50');
 
 -- Dumping structure for table spx_attendance.expenses
 CREATE TABLE IF NOT EXISTS `expenses` (
@@ -187,15 +164,16 @@ CREATE TABLE IF NOT EXISTS `expenses` (
   PRIMARY KEY (`id`),
   KEY `expenses_admin_id_foreign` (`admin_id`),
   CONSTRAINT `expenses_admin_id_foreign` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table spx_attendance.expenses: ~3 rows (approximately)
+-- Dumping data for table spx_attendance.expenses: ~6 rows (approximately)
 REPLACE INTO `expenses` (`id`, `admin_id`, `amount`, `date`, `description`, `created_at`, `updated_at`) VALUES
-	(1, 1, 2300.00, '2026-06-01', 'gas', '2026-07-06 17:32:19', '2026-07-06 17:32:19'),
-	(2, 1, 2300.00, '2026-06-08', 'gas', '2026-07-06 17:32:34', '2026-07-06 17:32:34'),
-	(3, 1, 2300.00, '2026-06-15', 'gas', '2026-07-06 17:32:45', '2026-07-06 17:32:45'),
-	(4, 1, 2300.00, '2026-06-22', 'gas', '2026-07-06 17:32:58', '2026-07-06 17:32:58'),
-	(5, 1, 2300.00, '2026-06-29', 'gas', '2026-07-06 17:33:12', '2026-07-06 17:33:12');
+	(1, 1, 1800.00, '2026-07-09', 'full tank gas', '2026-07-09 16:59:04', '2026-07-09 16:59:04'),
+	(2, 1, 3000.00, '2026-07-12', 'paid 3k cash partial payment sa car monthly due', '2026-07-12 16:14:30', '2026-07-12 16:14:30'),
+	(3, 1, 600.00, '2026-07-12', 'food', '2026-07-12 16:14:51', '2026-07-12 16:14:51'),
+	(4, 1, 2300.00, '2026-07-18', 'remaining balance for JUNE (paid)', '2026-07-19 16:14:57', '2026-07-19 16:14:57'),
+	(5, 1, 930.00, '2026-07-18', 'personal expense (laag2)', '2026-07-19 16:17:46', '2026-07-19 16:17:46'),
+	(6, 1, 5000.00, '2026-07-18', 'cash loan', '2026-07-19 16:18:09', '2026-07-19 16:18:09');
 
 -- Dumping structure for table spx_attendance.failed_jobs
 CREATE TABLE IF NOT EXISTS `failed_jobs` (
@@ -250,9 +228,9 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table spx_attendance.migrations: ~1 rows (approximately)
+-- Dumping data for table spx_attendance.migrations: ~0 rows (approximately)
 REPLACE INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(1, '0001_01_01_000000_create_users_table', 1),
 	(2, '0001_01_01_000001_create_cache_table', 1),
@@ -269,7 +247,9 @@ REPLACE INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(13, '2026_06_08_000002_add_manual_deduction_to_payslips_table', 1),
 	(14, '2026_06_30_000001_create_expenses_table', 1),
 	(15, '2026_06_30_000002_create_weekly_incomes_table', 1),
-	(16, '2026_07_02_000000_add_admin_id_to_tenant_tables', 1);
+	(16, '2026_07_02_000000_add_admin_id_to_tenant_tables', 1),
+	(17, '2026_07_08_000001_add_carried_balance_to_riders_table', 2),
+	(18, '2026_07_08_000002_add_prior_balance_to_payslips_table', 2);
 
 -- Dumping structure for table spx_attendance.password_reset_tokens
 CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
@@ -294,6 +274,7 @@ CREATE TABLE IF NOT EXISTS `payslips` (
   `gross_pay` decimal(10,2) NOT NULL DEFAULT '0.00',
   `cash_advance_deduction` decimal(10,2) NOT NULL DEFAULT '0.00',
   `manual_deduction` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `prior_balance_deduction` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT 'Amount of prior carried balance applied/deducted on this payslip',
   `net_pay` decimal(10,2) NOT NULL DEFAULT '0.00',
   `notes` text COLLATE utf8mb4_unicode_ci,
   `status` enum('draft','final') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
@@ -304,21 +285,17 @@ CREATE TABLE IF NOT EXISTS `payslips` (
   KEY `payslips_admin_id_foreign` (`admin_id`),
   CONSTRAINT `payslips_admin_id_foreign` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `payslips_rider_id_foreign` FOREIGN KEY (`rider_id`) REFERENCES `riders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table spx_attendance.payslips: ~0 rows (approximately)
-REPLACE INTO `payslips` (`id`, `admin_id`, `rider_id`, `week_start`, `week_end`, `days_worked`, `half_days`, `daily_rate`, `gross_pay`, `cash_advance_deduction`, `manual_deduction`, `net_pay`, `notes`, `status`, `created_at`, `updated_at`) VALUES
-	(1, 1, 3, '2026-06-08', '2026-06-14', 4, 0, 600.00, 2400.00, 0.00, 0.00, 2400.00, NULL, 'final', '2026-07-06 17:06:57', '2026-07-06 17:06:57'),
-	(2, 1, 4, '2026-06-08', '2026-06-14', 4, 0, 600.00, 2400.00, 1000.00, 0.00, 1400.00, NULL, 'final', '2026-07-06 17:06:57', '2026-07-06 17:06:57'),
-	(3, 1, 3, '2026-06-01', '2026-06-07', 2, 0, 600.00, 1200.00, 0.00, 0.00, 1200.00, NULL, 'final', '2026-07-06 17:08:31', '2026-07-06 17:08:31'),
-	(5, 1, 6, '2026-06-01', '2026-06-07', 1, 0, 500.00, 500.00, 0.00, 0.00, 500.00, NULL, 'final', '2026-07-06 17:08:31', '2026-07-06 17:08:31'),
-	(6, 1, 5, '2026-06-01', '2026-06-07', 3, 0, 600.00, 1800.00, 0.00, 0.00, 1800.00, NULL, 'final', '2026-07-06 17:08:31', '2026-07-06 17:08:31'),
-	(9, 1, 3, '2026-06-15', '2026-06-21', 5, 0, 600.00, 3000.00, 0.00, 0.00, 3000.00, NULL, 'final', '2026-07-06 17:08:56', '2026-07-06 17:08:56'),
-	(10, 1, 4, '2026-06-15', '2026-06-21', 5, 0, 600.00, 3000.00, 0.00, 0.00, 3000.00, NULL, 'final', '2026-07-06 17:08:56', '2026-07-06 17:08:56'),
-	(13, 1, 3, '2026-06-22', '2026-06-28', 4, 0, 600.00, 2400.00, 0.00, 0.00, 2400.00, NULL, 'final', '2026-07-06 17:29:23', '2026-07-06 17:29:23'),
-	(14, 1, 4, '2026-06-22', '2026-06-28', 4, 0, 600.00, 2400.00, 0.00, 0.00, 2400.00, NULL, 'final', '2026-07-06 17:29:23', '2026-07-06 17:29:23'),
-	(15, 1, 3, '2026-06-29', '2026-07-05', 4, 0, 600.00, 2800.00, 0.00, 0.00, 2800.00, NULL, 'final', '2026-07-06 17:29:40', '2026-07-06 17:29:40'),
-	(16, 1, 4, '2026-06-29', '2026-07-05', 3, 0, 600.00, 1800.00, 0.00, 0.00, 1800.00, NULL, 'final', '2026-07-06 17:29:40', '2026-07-06 17:29:40');
+-- Dumping data for table spx_attendance.payslips: ~7 rows (approximately)
+REPLACE INTO `payslips` (`id`, `admin_id`, `rider_id`, `week_start`, `week_end`, `days_worked`, `half_days`, `daily_rate`, `gross_pay`, `cash_advance_deduction`, `manual_deduction`, `prior_balance_deduction`, `net_pay`, `notes`, `status`, `created_at`, `updated_at`) VALUES
+	(20, 1, 3, '2026-06-29', '2026-07-05', 4, 0, 600.00, 2800.00, 0.00, 0.00, 0.00, 2800.00, NULL, 'final', '2026-07-09 16:59:36', '2026-07-09 16:59:36'),
+	(21, 1, 4, '2026-06-29', '2026-07-05', 3, 0, 600.00, 1800.00, 0.00, 0.00, 0.00, 1800.00, NULL, 'final', '2026-07-09 16:59:36', '2026-07-09 16:59:36'),
+	(23, 1, 4, '2026-07-06', '2026-07-12', 4, 0, 600.00, 2400.00, 0.00, 0.00, 0.00, 2400.00, NULL, 'final', '2026-07-12 21:10:36', '2026-07-12 21:10:36'),
+	(24, 1, 3, '2026-07-06', '2026-07-12', 5, 0, 600.00, 3400.00, 0.00, 500.00, 0.00, 2900.00, NULL, 'final', '2026-07-16 16:43:48', '2026-07-16 16:43:48'),
+	(25, 1, 3, '2026-07-13', '2026-07-19', 5, 0, 600.00, 3800.00, 0.00, 0.00, 0.00, 3800.00, NULL, 'final', '2026-07-19 16:35:50', '2026-07-19 16:35:50'),
+	(26, 1, 4, '2026-07-13', '2026-07-19', 1, 0, 600.00, 600.00, 0.00, 0.00, 0.00, 600.00, NULL, 'final', '2026-07-19 16:35:50', '2026-07-19 16:35:50'),
+	(27, 1, 8, '2026-07-13', '2026-07-19', 2, 0, 500.00, 1000.00, 100.00, 0.00, 0.00, 900.00, NULL, 'final', '2026-07-19 16:35:50', '2026-07-19 16:35:50');
 
 -- Dumping structure for table spx_attendance.payslip_cash_advances
 CREATE TABLE IF NOT EXISTS `payslip_cash_advances` (
@@ -332,11 +309,11 @@ CREATE TABLE IF NOT EXISTS `payslip_cash_advances` (
   KEY `payslip_cash_advances_cash_advance_id_foreign` (`cash_advance_id`),
   CONSTRAINT `payslip_cash_advances_cash_advance_id_foreign` FOREIGN KEY (`cash_advance_id`) REFERENCES `cash_advances` (`id`) ON DELETE CASCADE,
   CONSTRAINT `payslip_cash_advances_payslip_id_foreign` FOREIGN KEY (`payslip_id`) REFERENCES `payslips` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table spx_attendance.payslip_cash_advances: ~0 rows (approximately)
+-- Dumping data for table spx_attendance.payslip_cash_advances: ~2 rows (approximately)
 REPLACE INTO `payslip_cash_advances` (`id`, `payslip_id`, `cash_advance_id`, `created_at`, `updated_at`) VALUES
-	(1, 2, 2, NULL, NULL);
+	(4, 27, 5, NULL, NULL);
 
 -- Dumping structure for table spx_attendance.payslip_deductions
 CREATE TABLE IF NOT EXISTS `payslip_deductions` (
@@ -349,9 +326,11 @@ CREATE TABLE IF NOT EXISTS `payslip_deductions` (
   PRIMARY KEY (`id`),
   KEY `payslip_deductions_payslip_id_foreign` (`payslip_id`),
   CONSTRAINT `payslip_deductions_payslip_id_foreign` FOREIGN KEY (`payslip_id`) REFERENCES `payslips` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table spx_attendance.payslip_deductions: ~0 rows (approximately)
+REPLACE INTO `payslip_deductions` (`id`, `payslip_id`, `label`, `amount`, `created_at`, `updated_at`) VALUES
+	(1, 24, 'cellphone loan', 500.00, '2026-07-16 16:43:48', '2026-07-16 16:43:48');
 
 -- Dumping structure for table spx_attendance.riders
 CREATE TABLE IF NOT EXISTS `riders` (
@@ -361,6 +340,7 @@ CREATE TABLE IF NOT EXISTS `riders` (
   `employee_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `contact_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `daily_rate` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `carried_balance` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT 'Outstanding debt carried forward from previous payslips where deductions exceeded gross pay',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `user_id` bigint unsigned DEFAULT NULL,
   `spx_account_id` bigint unsigned DEFAULT NULL,
@@ -374,14 +354,15 @@ CREATE TABLE IF NOT EXISTS `riders` (
   CONSTRAINT `riders_admin_id_foreign` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `riders_spx_account_id_foreign` FOREIGN KEY (`spx_account_id`) REFERENCES `spx_accounts` (`id`) ON DELETE SET NULL,
   CONSTRAINT `riders_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table spx_attendance.riders: ~2 rows (approximately)
-REPLACE INTO `riders` (`id`, `admin_id`, `name`, `employee_id`, `contact_number`, `daily_rate`, `is_active`, `user_id`, `spx_account_id`, `created_at`, `updated_at`) VALUES
-	(3, 1, 'Jeff Clifford Aniñon', '1', '09657591242', 600.00, 1, NULL, NULL, '2026-07-06 16:51:20', '2026-07-06 16:51:20'),
-	(4, 1, 'Michael Adrian Romulo', '2', '09267926034', 600.00, 1, NULL, NULL, '2026-07-06 16:51:52', '2026-07-06 16:51:52'),
-	(5, 1, 'RJ Caayupan', '3', '09171622120', 600.00, 1, NULL, NULL, '2026-07-06 16:54:57', '2026-07-06 16:54:57'),
-	(6, 1, 'Mike Jun Zaballero', '4', '09750488036', 500.00, 1, NULL, NULL, '2026-07-06 16:55:16', '2026-07-06 16:55:16');
+-- Dumping data for table spx_attendance.riders: ~4 rows (approximately)
+REPLACE INTO `riders` (`id`, `admin_id`, `name`, `employee_id`, `contact_number`, `daily_rate`, `carried_balance`, `is_active`, `user_id`, `spx_account_id`, `created_at`, `updated_at`) VALUES
+	(3, 1, 'Jeff Clifford Aniñon', '1', '09657591242', 600.00, 0.00, 1, NULL, NULL, '2026-07-06 16:51:20', '2026-07-07 19:12:02'),
+	(4, 1, 'Michael Adrian Romulo', '2', '09267926034', 600.00, 0.00, 1, NULL, NULL, '2026-07-06 16:51:52', '2026-07-07 17:58:15'),
+	(5, 1, 'RJ Caayupan', '3', '09171622120', 600.00, 0.00, 1, NULL, NULL, '2026-07-06 16:54:57', '2026-07-07 17:58:15'),
+	(6, 1, 'Mike Jun Zaballero', '4', '09750488036', 500.00, 0.00, 1, NULL, NULL, '2026-07-06 16:55:16', '2026-07-07 17:58:15'),
+	(8, 1, 'Rap2', '5', '0912345666', 500.00, 0.00, 1, NULL, NULL, '2026-07-12 21:41:12', '2026-07-12 21:41:12');
 
 -- Dumping structure for table spx_attendance.sessions
 CREATE TABLE IF NOT EXISTS `sessions` (
@@ -398,7 +379,8 @@ CREATE TABLE IF NOT EXISTS `sessions` (
 
 -- Dumping data for table spx_attendance.sessions: ~2 rows (approximately)
 REPLACE INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-	('XIffRkg4aV2bumT6z5PMsyLriUu2GHzeSHZW0nSq', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiTGF2RHdVdkl1Y1U4M2wwT2JPRDY5aGpjQU52SnQ3S1dVY09qdXpkRCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NjI6Imh0dHA6Ly9zcHhhdHRlbmRhbmNlLnRlc3QvZGFzaGJvYXJkP21vbnRoPTIwMjYtMDYmcGVyaW9kPW1vbnRoIjtzOjU6InJvdXRlIjtzOjk6ImRhc2hib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MzoidXJsIjthOjA6e31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=', 1783406428);
+	('1i0oBIOdpP9elJIsJycTrlihMKkKvDHnykjip1Gq', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoibFR3V015V0VHTWZhb2RNQUdYbWtxQ1hPWGZLOVpEU0pWU0xBNkxvSCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6OTc6Imh0dHA6Ly9zcHhhdHRlbmRhbmNlLnRlc3QvcGF5c2xpcHMvcmVwb3J0P2N1c3RvbV93ZWVrX3N0YXJ0PSZ3ZWVrX3N0YXJ0PTIwMjYtMDctMTMlMjAwMCUzQTAwJTNBMDAiO3M6NToicm91dGUiO3M6MTU6InBheXNsaXBzLnJlcG9ydCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MzoidXJsIjthOjA6e31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=', 1784507772),
+	('e1Obf15MW231c7sVQcVgxszoPifjpGBzUe7QFHDn', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiM2l1S3FtVWZOU1VOMHhnYWUwOW5jZ0x5aG1NY0tvR2s5bENJQWlxSiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzQ6Imh0dHA6Ly9zcHhhdHRlbmRhbmNlLnRlc3QvcGF5c2xpcHMiO3M6NToicm91dGUiO3M6MTQ6InBheXNsaXBzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MDp7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1784256331);
 
 -- Dumping structure for table spx_attendance.spx_accounts
 CREATE TABLE IF NOT EXISTS `spx_accounts` (
@@ -436,7 +418,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `users_email_unique` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table spx_attendance.users: ~3 rows (approximately)
+-- Dumping data for table spx_attendance.users: ~1 rows (approximately)
 REPLACE INTO `users` (`id`, `name`, `email`, `role`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
 	(1, 'Admin', 'admin@spx.com', 'admin', NULL, '$2y$12$Yjlu6rdGwZ9FtRcdq1dTFOnrNyuG6n8ldF9R9d1DPZB6uGPww3bzO', NULL, '2026-07-06 16:30:31', '2026-07-06 16:30:31');
 
@@ -452,15 +434,12 @@ CREATE TABLE IF NOT EXISTS `weekly_incomes` (
   PRIMARY KEY (`id`),
   KEY `weekly_incomes_admin_id_foreign` (`admin_id`),
   CONSTRAINT `weekly_incomes_admin_id_foreign` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table spx_attendance.weekly_incomes: ~0 rows (approximately)
 REPLACE INTO `weekly_incomes` (`id`, `admin_id`, `amount`, `week_start`, `notes`, `created_at`, `updated_at`) VALUES
-	(1, 1, 14629.37, '2026-06-01', NULL, '2026-07-06 17:03:35', '2026-07-06 17:03:35'),
-	(2, 1, 12135.00, '2026-06-08', NULL, '2026-07-06 17:03:54', '2026-07-06 17:03:54'),
-	(3, 1, 9291.94, '2026-06-15', NULL, '2026-07-06 17:04:16', '2026-07-06 17:04:16'),
-	(4, 1, 10939.00, '2026-06-22', NULL, '2026-07-06 17:04:45', '2026-07-06 17:04:45'),
-	(5, 1, 11200.00, '2026-06-29', NULL, '2026-07-06 17:05:01', '2026-07-06 17:05:01');
+	(1, 1, 10000.00, '2026-07-06', NULL, '2026-07-09 16:59:17', '2026-07-09 16:59:17'),
+	(2, 1, 9130.00, '2026-07-13', NULL, '2026-07-15 23:01:28', '2026-07-15 23:01:28');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
