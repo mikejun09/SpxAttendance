@@ -438,7 +438,7 @@
                             <th>Day</th>
                             <th>SPX Account</th>
                             <th>Status</th>
-
+                            <th>Notes</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -459,7 +459,7 @@
                                     @endphp
                                     <span class="status-badge {{ $sc }}">{{ $att->status_label }}</span>
                                 </td>
-
+                                <td style="color:#64748b; font-size:12px;">{{ $att->notes ?: '—' }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -487,6 +487,19 @@
                     <span class="lbl">Gross Pay</span>
                     <span style="font-weight:700; font-size:15px;">₱{{ number_format($payslip->gross_pay, 2) }}</span>
                 </div>
+                @if ($payslip->additional_pay > 0)
+                    <div class="pay-row">
+                        <span class="lbl">Additional Pay / Rate</span>
+                        <span style="font-weight:600; color:#16a34a;">+
+                            ₱{{ number_format($payslip->additional_pay, 2) }}</span>
+                    </div>
+                    @foreach ($payslip->additions as $add)
+                        <div class="pay-row" style="padding:4px 0 4px 16px;">
+                            <span class="lbl" style="font-size:12px;">↳ {{ $add->label }}</span>
+                            <span style="font-size:12px; color:#16a34a;">₱{{ number_format($add->amount, 2) }}</span>
+                        </div>
+                    @endforeach
+                @endif
                 @if ($payslip->cash_advance_deduction > 0)
                     <div class="pay-row">
                         <span class="lbl">Cash Advance Deduction</span>

@@ -238,6 +238,7 @@
                                         <th>Day</th>
                                         <th>SPX Account</th>
                                         <th>Status</th>
+                                        <th>Notes</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -265,6 +266,7 @@
                                                 @endphp
                                                 <span class="badge {{ $bc }}">{{ $att->status_label }}</span>
                                             </td>
+                                            <td style="color:var(--text-muted); font-size:12px;">{{ $att->notes ?: '—' }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -336,6 +338,34 @@
                     @endif
                 </div>
 
+                {{-- ─── Additional Rate / Pay & Allowances ────────────────────── --}}
+                <div class="card" style="margin-bottom:20px;">
+                    <div class="card-title" style="margin-bottom:4px;">
+                        <i class="fa-solid fa-circle-plus" style="color:var(--success, #22c55e)"></i> Additional Pay / Rate &amp; Allowances
+                    </div>
+                    <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">
+                        Add any additional rate, incentives, or allowances for this week (e.g. ₱150 bonus, gas allowance).
+                    </p>
+
+                    <div id="additions-container">
+                        {{-- Rows injected dynamically --}}
+                    </div>
+
+                    <button type="button" class="btn-add-deduction" id="btn-add-addition" style="border-color:var(--success, #22c55e); color:var(--success, #22c55e);">
+                        <i class="fa-solid fa-plus"></i> Add Additional Rate / Allowance
+                    </button>
+
+                    {{-- Live summary --}}
+                    <div id="manual-addition-summary"
+                        style="display:none; margin-top:14px; padding:10px 14px; background:var(--bg-hover); border-radius:8px; font-size:13px;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:var(--text-muted);">Total Additional Pay</span>
+                            <span id="live-addition-total"
+                                style="font-weight:700; color:var(--success, #22c55e);">₱0.00</span>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- ─── Manual Salary Deductions ─────────────────────────────── --}}
                 <div class="card" style="margin-bottom:20px;">
                     <div class="card-title" style="margin-bottom:4px;">
@@ -375,7 +405,7 @@
                                 <i class="fa-solid fa-calculator"></i> Estimated Net Pay
                             </div>
                             <div style="font-size:11px; color:var(--text-muted);">
-                                Gross − CA Deductions − Manual Deductions
+                                (Gross + Additional Pay) − CA Deductions − Manual Deductions
                             </div>
                         </div>
                         <div id="live-net-pay" style="font-size:28px; font-weight:800; color:var(--success);">
@@ -415,10 +445,14 @@
         <script>
             (function() {
                 const gross = parseFloat(document.getElementById('js-gross')?.value ?? 0);
-                const container = document.getElementById('deductions-container');
-                const btnAdd = document.getElementById('btn-add-deduction');
-                const summary = document.getElementById('manual-deduction-summary');
+                const deductionsContainer = document.getElementById('deductions-container');
+                const additionsContainer = document.getElementById('additions-container');
+                const btnAddDeduction = document.getElementById('btn-add-deduction');
+                const btnAddAddition = document.getElementById('btn-add-addition');
+                const deductionSummary = document.getElementById('manual-deduction-summary');
+                const additionSummary = document.getElementById('manual-addition-summary');
                 const liveManual = document.getElementById('live-manual-total');
+                const liveAddition = document.getElementById('live-addition-total');
                 const liveNet = document.getElementById('live-net-pay');
 
                 // CA checkboxes
@@ -429,77 +463,118 @@
                     document.querySelectorAll('.ca-checkbox:checked').forEach(cb => {
                         caTotal += parseFloat(cb.dataset.amount || 0);
                     });
-                    refreshNet();
+                    refreshAll();
                 }
                 document.querySelectorAll('.ca-checkbox').forEach(cb => cb.addEventListener('change', sumCa));
                 sumCa(); // initial
 
-                let rowIndex = 0;
+                let deductionRowIndex = 0;
+                let additionRowIndex = 0;
 
-                function addRow(label = '', amount = '') {
-                    const idx = rowIndex++;
+                // Add Addition Row
+                function addAdditionRow(label = '', amount = '') {
+                    const idx = additionRowIndex++;
                     const row = document.createElement('div');
                     row.className = 'deduction-row';
                     row.dataset.idx = idx;
                     row.innerHTML = `
-            <input type="text"   name="deductions[${idx}][label]"  placeholder="e.g. Uniform Fee" value="${label}" required>
-            <input type="number" name="deductions[${idx}][amount]" placeholder="0.00" min="0" step="0.01" value="${amount}" required>
-            <button type="button" class="btn-remove-deduction" title="Remove">✕</button>
-        `;
+                        <input type="text"   name="additions[${idx}][label]"  placeholder="e.g. Additional Rate / Incentive" value="${label}" required>
+                        <input type="number" name="additions[${idx}][amount]" placeholder="0.00" min="0" step="0.01" value="${amount}" required>
+                        <button type="button" class="btn-remove-deduction" title="Remove">✕</button>
+                    `;
                     row.querySelector('.btn-remove-deduction').addEventListener('click', () => {
                         row.remove();
                         refreshAll();
                     });
                     row.querySelectorAll('input').forEach(inp => inp.addEventListener('input', refreshAll));
-                    container.appendChild(row);
+                    additionsContainer.appendChild(row);
 
-                    // Show header on first row
-                    if (rowIndex === 1) showHeader();
+                    if (additionsContainer.children.length === 1) showAdditionHeader();
                     refreshAll();
                 }
 
-                function showHeader() {
+                function showAdditionHeader() {
+                    if (document.getElementById('addition-header')) return;
+                    const h = document.createElement('div');
+                    h.id = 'addition-header';
+                    h.className = 'deduction-header';
+                    h.innerHTML = '<span>Remarks / Description</span><span>Amount (₱)</span><span></span>';
+                    additionsContainer.before(h);
+                }
+
+                // Add Deduction Row
+                function addDeductionRow(label = '', amount = '') {
+                    const idx = deductionRowIndex++;
+                    const row = document.createElement('div');
+                    row.className = 'deduction-row';
+                    row.dataset.idx = idx;
+                    row.innerHTML = `
+                        <input type="text"   name="deductions[${idx}][label]"  placeholder="e.g. Uniform Fee" value="${label}" required>
+                        <input type="number" name="deductions[${idx}][amount]" placeholder="0.00" min="0" step="0.01" value="${amount}" required>
+                        <button type="button" class="btn-remove-deduction" title="Remove">✕</button>
+                    `;
+                    row.querySelector('.btn-remove-deduction').addEventListener('click', () => {
+                        row.remove();
+                        refreshAll();
+                    });
+                    row.querySelectorAll('input').forEach(inp => inp.addEventListener('input', refreshAll));
+                    deductionsContainer.appendChild(row);
+
+                    if (deductionsContainer.children.length === 1) showDeductionHeader();
+                    refreshAll();
+                }
+
+                function showDeductionHeader() {
                     if (document.getElementById('deduction-header')) return;
                     const h = document.createElement('div');
                     h.id = 'deduction-header';
                     h.className = 'deduction-header';
                     h.innerHTML = '<span>Description</span><span>Amount (₱)</span><span></span>';
-                    container.before(h);
+                    deductionsContainer.before(h);
                 }
 
                 function refreshAll() {
-                    // Remove orphan header
-                    const header = document.getElementById('deduction-header');
-                    if (header && container.children.length === 0) header.remove();
+                    // Headers removal check
+                    const addHeader = document.getElementById('addition-header');
+                    if (addHeader && additionsContainer.children.length === 0) addHeader.remove();
 
-                    let total = 0;
-                    container.querySelectorAll('.deduction-row').forEach(row => {
-                        const amt = parseFloat(row.querySelector('input[type="number"]').value) || 0;
-                        total += amt;
+                    const dedHeader = document.getElementById('deduction-header');
+                    if (dedHeader && deductionsContainer.children.length === 0) dedHeader.remove();
+
+                    // Sum additions
+                    let addTotal = 0;
+                    additionsContainer.querySelectorAll('.deduction-row').forEach(row => {
+                        addTotal += parseFloat(row.querySelector('input[type="number"]').value) || 0;
                     });
 
-                    if (total > 0 || container.children.length > 0) {
-                        summary.style.display = 'block';
-                        liveManual.textContent = '₱' + total.toLocaleString('en-PH', {
+                    if (addTotal > 0 || additionsContainer.children.length > 0) {
+                        additionSummary.style.display = 'block';
+                        liveAddition.textContent = '₱' + addTotal.toLocaleString('en-PH', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2
                         });
                     } else {
-                        summary.style.display = 'none';
+                        additionSummary.style.display = 'none';
                     }
 
-                    refreshNet(total);
-                }
+                    // Sum deductions
+                    let dedTotal = 0;
+                    deductionsContainer.querySelectorAll('.deduction-row').forEach(row => {
+                        dedTotal += parseFloat(row.querySelector('input[type="number"]').value) || 0;
+                    });
 
-                function refreshNet(manualTotal) {
-                    if (manualTotal === undefined) {
-                        manualTotal = 0;
-                        container.querySelectorAll('.deduction-row').forEach(row => {
-                            manualTotal += parseFloat(row.querySelector('input[type="number"]').value) || 0;
+                    if (dedTotal > 0 || deductionsContainer.children.length > 0) {
+                        deductionSummary.style.display = 'block';
+                        liveManual.textContent = '₱' + dedTotal.toLocaleString('en-PH', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
                         });
+                    } else {
+                        deductionSummary.style.display = 'none';
                     }
+
                     const priorBalance = parseFloat(document.getElementById('js-prior-balance')?.value ?? 0);
-                    const net = Math.max(0, gross - caTotal - manualTotal - priorBalance);
+                    const net = Math.max(0, (gross + addTotal) - caTotal - dedTotal - priorBalance);
                     liveNet.textContent = '₱' + net.toLocaleString('en-PH', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2
@@ -507,7 +582,8 @@
                     liveNet.style.color = net > 0 ? 'var(--success)' : 'var(--danger, #ef4444)';
                 }
 
-                btnAdd?.addEventListener('click', () => addRow());
+                btnAddAddition?.addEventListener('click', () => addAdditionRow());
+                btnAddDeduction?.addEventListener('click', () => addDeductionRow());
             })();
         </script>
     @endpush

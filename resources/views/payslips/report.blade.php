@@ -460,6 +460,7 @@
                             <th class="right">Days Worked</th>
                             <th class="right">Daily Rate</th>
                             <th class="right">Gross Pay</th>
+                            <th class="right">Add. Pay</th>
                             <th class="right">CA Deduction</th>
                             <th class="right">Other Deductions</th>
                             <th class="right">Net Pay</th>
@@ -482,6 +483,20 @@
                                 </td>
                                 <td class="right muted">₱{{ number_format($ps->daily_rate, 2) }}</td>
                                 <td class="right">₱{{ number_format($ps->gross_pay, 2) }}</td>
+                                <td class="right">
+                                    @if ($ps->additional_pay > 0)
+                                        <span class="green">₱{{ number_format($ps->additional_pay, 2) }}</span>
+                                        @if ($ps->additions->isNotEmpty())
+                                            <div class="deductions-detail" style="color:#16a34a;">
+                                                @foreach ($ps->additions as $a)
+                                                    {{ $a->label }}@if (!$loop->last), @endif
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    @else
+                                        <span class="muted">—</span>
+                                    @endif
+                                </td>
                                 <td class="right">
                                     @if ($ps->cash_advance_deduction > 0)
                                         <span class="red">₱{{ number_format($ps->cash_advance_deduction, 2) }}</span>
@@ -524,6 +539,7 @@
                         <td class="right">{{ $totals['days'] }}</td>
                         <td class="right">—</td>
                         <td class="right">₱{{ number_format($totals['gross'], 2) }}</td>
+                        <td class="right" style="color:#86efac;">₱{{ number_format($totals['addition'], 2) }}</td>
                         <td class="right" style="color:#fca5a5;">₱{{ number_format($totals['ca'], 2) }}</td>
                         <td class="right" style="color:#fca5a5;">₱{{ number_format($totals['manual'], 2) }}</td>
                         <td class="right grand-net">₱{{ number_format($totals['net'], 2) }}</td>

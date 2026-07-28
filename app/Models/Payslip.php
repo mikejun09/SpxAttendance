@@ -21,6 +21,7 @@ class Payslip extends Model
         'half_days',
         'daily_rate',
         'gross_pay',
+        'additional_pay',
         'cash_advance_deduction',
         'manual_deduction',
         'prior_balance_deduction',
@@ -35,6 +36,7 @@ class Payslip extends Model
         'week_end'                 => 'date',
         'daily_rate'               => 'decimal:2',
         'gross_pay'                => 'decimal:2',
+        'additional_pay'           => 'decimal:2',
         'cash_advance_deduction'   => 'decimal:2',
         'manual_deduction'         => 'decimal:2',
         'prior_balance_deduction'  => 'decimal:2',
@@ -54,6 +56,11 @@ class Payslip extends Model
     public function deductions(): HasMany
     {
         return $this->hasMany(PayslipDeduction::class)->orderBy('id');
+    }
+
+    public function additions(): HasMany
+    {
+        return $this->hasMany(PayslipAddition::class)->orderBy('id');
     }
 
     public function getPeriodLabelAttribute(): string

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\CashAdvance;
 use App\Models\Payslip;
+use App\Models\PayslipAddition;
 use App\Models\PayslipDeduction;
 use App\Models\Rider;
 use Carbon\Carbon;
@@ -64,6 +65,9 @@ class PayslipController extends Controller
             'week_start'              => 'required|date',
             'cash_advance_ids'        => 'nullable|array',
             'cash_advance_ids.*'      => 'exists:cash_advances,id',
+            'additions'               => 'nullable|array',
+            'additions.*.label'       => 'required_with:additions.*.amount|string|max:100',
+            'additions.*.amount'      => 'required_with:additions.*.label|numeric|min:0',
             'deductions'              => 'nullable|array',
             'deductions.*.label'      => 'required_with:deductions.*.amount|string|max:100',
             'deductions.*.amount'     => 'required_with:deductions.*.label|numeric|min:0',
@@ -100,6 +104,11 @@ class PayslipController extends Controller
                 ->sum('amount');
         }
 
+        // Determine manual additions
+        $manualAdditions = collect($validated['additions'] ?? [])
+            ->filter(fn($a) => isset($a['label'], $a['amount']) && $a['label'] !== '' && $a['amount'] > 0);
+        $additionalTotal = $manualAdditions->sum('amount');
+
         // Determine manual deductions
         $manualDeductions = collect($validated['deductions'] ?? [])
             ->filter(fn($d) => isset($d['label'], $d['amount']) && $d['label'] !== '' && $d['amount'] > 0);
@@ -108,8 +117,8 @@ class PayslipController extends Controller
         $grossPay      = $data['gross_pay'];
         $carriedBalance = (float) $rider->carried_balance;
 
-        // Compute net pay including any prior carried balance
-        $rawNet = $grossPay - $caDeduction - $manualTotal - $carriedBalance;
+        // Compute net pay including additions and prior carried balance
+        $rawNet = ($grossPay + $additionalTotal) - $caDeduction - $manualTotal - $carriedBalance;
 
         if ($rawNet >= 0) {
             // Rider fully covers carried balance this week
@@ -118,7 +127,6 @@ class PayslipController extends Controller
             $newCarriedBalance     = 0;
         } else {
             // Still not enough — absorb what we can, carry the rest forward
-            // priorBalanceDeduction = how much of the carried balance was recovered (can't be negative)
             $priorBalanceDeduction = max(0, $carriedBalance + $rawNet);
             $netPay                = 0;
             $newCarriedBalance     = abs($rawNet);
@@ -132,6 +140,7 @@ class PayslipController extends Controller
             'half_days'              => $data['half_days'],
             'daily_rate'             => $rider->daily_rate,
             'gross_pay'              => $grossPay,
+            'additional_pay'         => $additionalTotal,
             'cash_advance_deduction' => $caDeduction,
             'manual_deduction'       => $manualTotal,
             'prior_balance_deduction'=> $priorBalanceDeduction,
@@ -147,6 +156,15 @@ class PayslipController extends Controller
         if (!empty($caIds)) {
             $payslip->cashAdvances()->attach($caIds);
             CashAdvance::whereIn('id', $caIds)->update(['is_deducted' => true]);
+        }
+
+        // Save addition rows
+        foreach ($manualAdditions as $a) {
+            PayslipAddition::create([
+                'payslip_id' => $payslip->id,
+                'label'      => $a['label'],
+                'amount'     => $a['amount'],
+            ]);
         }
 
         // Save manual deduction rows
@@ -174,7 +192,7 @@ class PayslipController extends Controller
             abort(403);
         }
 
-        $payslip->load(['rider', 'cashAdvances', 'deductions']);
+        $payslip->load(['rider', 'cashAdvances', 'deductions', 'additions']);
 
         $attendances = Attendance::with('spxAccount')
             ->where('rider_id', $payslip->rider_id)
@@ -188,7 +206,7 @@ class PayslipController extends Controller
 
     public function print(Payslip $payslip)
     {
-        $payslip->load(['rider', 'cashAdvances', 'deductions']);
+        $payslip->load(['rider', 'cashAdvances', 'deductions', 'additions']);
 
         $attendances = Attendance::with('spxAccount')
             ->where('rider_id', $payslip->rider_id)
@@ -214,7 +232,7 @@ class PayslipController extends Controller
             $rider->increment('carried_balance', $priorApplied);
         }
 
-        // payslip_deductions cascade-delete automatically
+        // payslip_deductions and payslip_additions cascade-delete automatically
         $payslip->delete();
 
         return redirect()->route('payslips.index')
@@ -235,7 +253,7 @@ class PayslipController extends Controller
 
         $weekEnd = $weekStart->copy()->endOfWeek(Carbon::SUNDAY);
 
-        $payslips = Payslip::with(['rider', 'deductions', 'cashAdvances'])
+        $payslips = Payslip::with(['rider', 'deductions', 'cashAdvances', 'additions'])
             ->join('riders', 'payslips.rider_id', '=', 'riders.id')
             ->whereDate('payslips.week_start', $weekStart->toDateString())
             ->orderBy('riders.name')
@@ -243,11 +261,12 @@ class PayslipController extends Controller
             ->get();
 
         $totals = [
-            'gross'   => $payslips->sum('gross_pay'),
-            'ca'      => $payslips->sum('cash_advance_deduction'),
-            'manual'  => $payslips->sum('manual_deduction'),
-            'net'     => $payslips->sum('net_pay'),
-            'days'    => $payslips->sum('days_worked'),
+            'gross'    => $payslips->sum('gross_pay'),
+            'addition' => $payslips->sum('additional_pay'),
+            'ca'       => $payslips->sum('cash_advance_deduction'),
+            'manual'   => $payslips->sum('manual_deduction'),
+            'net'      => $payslips->sum('net_pay'),
+            'days'     => $payslips->sum('days_worked'),
         ];
 
         // Available weeks for the selector (distinct week_starts in payslips)
