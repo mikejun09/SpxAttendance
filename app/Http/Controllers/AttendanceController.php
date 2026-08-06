@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\CashAdvance;
 use App\Models\Rider;
 use App\Models\SpxAccount;
 use Carbon\Carbon;
@@ -84,14 +85,29 @@ class AttendanceController extends Controller
         $date = $request->date;
 
         foreach ($request->attendance as $riderId => $data) {
+            $notes = isset($data['notes']) ? trim($data['notes']) : null;
+
             Attendance::updateOrCreate(
                 ['rider_id' => $riderId, 'date' => $date],
                 [
                     'status'         => $data['status'],
                     'spx_account_id' => $data['spx_id'] ?? null,
-                    'notes'          => $data['notes'] ?? null,
+                    'notes'          => $notes ?: null,
                 ]
             );
+
+            // If notes is a pure whole number, auto-create/update a cash advance
+            if ($notes !== null && $notes !== '' && ctype_digit($notes)) {
+                CashAdvance::updateOrCreate(
+                    ['rider_id' => $riderId, 'date' => $date],
+                    [
+                        'amount'      => (int) $notes,
+                        'notes'       => 'From attendance entry',
+                        'is_deducted' => false,
+                        'admin_id'    => auth()->id(),
+                    ]
+                );
+            }
         }
 
         return redirect()->route('attendance.daily', $date)
